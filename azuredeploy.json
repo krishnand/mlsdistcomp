@@ -27,7 +27,7 @@
     "dnsLabelPrefix": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+        "description": "Name of the VM to be provisioned in the resource group. Also the prefix for related resources."
       }
     },
     "sqlserverAdminLogin": {
@@ -110,10 +110,6 @@
       "metadata": {
         "description": "Size of VM"
       }
-    },
-    "webAppSvcPlanName": {
-      "type": "string",
-      "minLength": 1
     },
     "webAppSvcSkuName": {
       "type": "string",
@@ -471,7 +467,7 @@
       ]
     },
     {
-      "name": "[parameters('webAppSvcPlanName')]",
+      "name": "[variables('webAppSvcPlanName')]",
       "type": "Microsoft.Web/serverfarms",
       "location": "[resourceGroup().location]",
       "apiVersion": "2015-08-01",
@@ -483,7 +479,7 @@
         "displayName": "MLSDistCompWebAppServicePlan"
       },
       "properties": {
-        "name": "[parameters('webAppSvcPlanName')]",
+        "name": "[variables('webAppSvcPlanName')]",
         "numberOfWorkers": 1
       }
     },
@@ -493,15 +489,15 @@
       "location": "[resourceGroup().location]",
       "apiVersion": "2015-08-01",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('webAppSvcPlanName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', variables('webAppSvcPlanName'))]"
       ],
       "tags": {
-        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('webAppSvcPlanName')))]": "Resource",
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', variables('webAppSvcPlanName')))]": "Resource",
         "displayName": "MLSDistCompWebAppService"
       },
       "properties": {
         "name": "[variables('webAppName')]",
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('webAppSvcPlanName'))]"
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webAppSvcPlanName'))]"
       }
     }
   ],
