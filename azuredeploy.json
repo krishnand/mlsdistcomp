@@ -6,13 +6,23 @@
       "type": "string",
       "metadata": {
         "description": "Username for the Virtual Machine."
-      }
+      },
+      "defaultValue": "mlsAdmin"
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
         "description": "Password for the Virtual Machine and Operationalization. Must be 8-16 characters long and contain at least 1 uppercase character(s), 1+ lowercase character(s), 1+ number(s), and 1+ special character(s)"
-      }
+      },
+      "defaultValue": "Welcome1234!"
+    },
+    "deploymentProfile": {
+      "type": "string",
+      "defaultValue": "Participant",
+      "allowedValues": [
+        "Central",
+        "Participant"
+      ]
     },
     "dnsLabelPrefix": {
       "type": "string",
@@ -22,10 +32,12 @@
     },
     "sqlserverAdminLogin": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "defaultValue": "sqlAdmin"
     },
-    "sqlserverAdminLoginPassword": {
-      "type": "securestring"
+    "sqlserverAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "Welcome1234!"
     },
     "sqlDatabaseNameCollation": {
       "type": "string",
@@ -123,7 +135,7 @@
       "metadata": {
         "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
       }
-    } 
+    }
   },
   "variables": {
     "addressPrefix": "10.0.0.0/16",
@@ -375,7 +387,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\"',variables('sqlDatabaseName'), '\"', parameters('sqlserverAdminLogin'), '\"', parameters('sqlserverAdminLoginPassword'), '\"', variables('scriptUriSqlDeploy'), '\"')]"
+              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\"',variables('sqlDatabaseName'), '\"', parameters('sqlserverAdminLogin'), '\"', parameters('sqlserverAdminPassword'), '\"', variables('scriptUriSqlDeploy'), '\"')]"
             }
           }
         }
@@ -420,7 +432,7 @@
       },
       "properties": {
         "administratorLogin": "[parameters('sqlserverAdminLogin')]",
-        "administratorLoginPassword": "[parameters('sqlserverAdminLoginPassword')]"
+        "administratorLoginPassword": "[parameters('sqlserverAdminPassword')]"
       },
       "resources": [
         {
