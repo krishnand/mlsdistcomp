@@ -35,6 +35,6 @@ source ~/.bashrc
 #
 # Execute SQL CMD to provision execute schema creation script
 #
-SQLCMD -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptpath
+sqlcmd -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptpath
 
 
