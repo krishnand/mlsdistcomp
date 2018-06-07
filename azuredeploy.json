@@ -141,9 +141,9 @@
     "networkSecurityGroupName": "[concat(parameters('dnsLabelPrefix'), 'nsg')]",
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
     "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",
-    "scriptUriSqlDeploy": "[uri(deployment().properties.templateLink.uri, '/scripts/sqldbcreate.sh')]",
-    "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, '/scripts/webappdeploy.sh')]",
-    "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, '/scripts/mlsconfigure.sh')]",
+    "scriptUriSqlDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/sqldbcreate.sh')]",
+    "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
+    "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
     "sqlDatabaseName": "mlsdistcompdb",
     "sqlServerName": "[concat(parameters('dnsLabelPrefix'), 'sql', uniquestring(resourceGroup().id))]",
     "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'sa', uniquestring(resourceGroup().id))]",
@@ -367,7 +367,7 @@
           "apiVersion": "2016-03-30",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
-            "[resourceId('databases', variables('sqlDatabaseName'))]"
+            "[resourceId('Microsoft.Sql/servers/databases', variables('sqlServerName'), variables('sqlDatabaseName'))]"
           ],
           "tags": {
             "displayName": "SqlDatabaseDeploy"
