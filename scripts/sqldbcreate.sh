@@ -17,6 +17,15 @@ adminpasswd=$4
 # Sql script path
 sqlscriptpath=$5
 
+echo ******************************************
+echo Inputs
+echo dbservername is $dbservername
+echo dbname is dbname
+echo adminusername is $adminusername
+echo adminpasswd is $adminpasswd
+echo sqlscriptpath is $sqlscriptpath
+echo Command is sqlcmd -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptpath
+echo ******************************************
 #
 # Install SQL tools on Ubuntu 16.04
 # https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools?view=sql-server-linux-2017
