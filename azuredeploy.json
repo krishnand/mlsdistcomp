@@ -367,7 +367,7 @@
           "apiVersion": "2016-03-30",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
-            "[resourceId('Microsoft.Sql/servers/databases', variables('sqlDatabaseName'))]"
+            "[resourceId('databases', variables('sqlDatabaseName'))]"
           ],
           "tags": {
             "displayName": "SqlDatabaseDeploy"
