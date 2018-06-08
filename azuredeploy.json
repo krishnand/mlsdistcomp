@@ -142,6 +142,7 @@
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
     "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",
     "scriptUriSqlDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/sqldbcreate.sh')]",
+    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcompmin.sql')]",
     "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
     "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
     "sqlDatabaseName": "mlsdistcompdb",
