@@ -384,7 +384,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSqlDeploy'), '\"')]"
+              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\"')]"
             }
           }
         }
