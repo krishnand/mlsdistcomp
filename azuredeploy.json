@@ -142,7 +142,8 @@
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
     "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",
     "scriptUriSqlDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/sqldbcreate.sh')]",
-    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcompmin.sql')]",
+    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts')]",
+    "scriptNameSql": "mlsdistcompmin.sql",
     "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
     "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
     "sqlDatabaseName": "mlsdistcompdb",
@@ -384,7 +385,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\"')]"
+              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', '\" \"', variables('scriptNameSql'), '\" \"', variables('scriptUriSql'), '\"')]"
             }
           }
         }

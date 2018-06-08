@@ -14,8 +14,11 @@ adminusername=$3
 # Sql admin password
 adminpasswd=$4
 
+# Sql script name
+sqlscriptname=$5
+
 # Sql script path
-sqlscriptpath=$5
+sqlscriptpath=$6
 
 echo ******************************************
 echo Inputs
@@ -24,7 +27,7 @@ echo dbname is dbname
 echo adminusername is $adminusername
 echo adminpasswd is $adminpasswd
 echo sqlscriptpath is $sqlscriptpath
-echo Command is sqlcmd -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptpath
+echo Command is sqlcmd -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptname
 echo ******************************************
 #
 # Install SQL tools on Ubuntu 16.04
@@ -39,11 +42,18 @@ echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 source ~/.bashrc
 # Clean install
 #sudo apt-get install mssql-tools unixodbc-dev
+echo "Install completed"
 
+#
+# Download script locally
+#
+echo $PWD
+wget -q "$sqlscriptpath/$sqlscriptname"
+echo 'Script downloaded'
 
 #
 # Execute SQL CMD to provision execute schema creation script
 #
-sqlcmd -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptpath
-
+sqlcmd -S $dbservername.database.windows.net -U $adminusername@$dbservername -P $adminpasswd -d $dbname -i $sqlscriptname
+echo "Sql command completed"
 
