@@ -35,62 +35,26 @@ fi
 # Arguments
 #
 ###############################################################################
-PROFILE=${1}        # Install the central server version instead of the remote version
-                    # secrets for the SQL connection string
-SQL_SERVER=${2}        # SQL server name
-SQL_DATABASE=${3}      # SQL account
-SQL_USER=${4}         # SQL password
-SQL_PASSWORD=${5}         # SQL password
+# Configure the environment for: "Central" or "Participant"
+PROFILE=${1}
+# SQL Server DNS
+SQL_SERVER=${2} 
+# SQL Server - Database name
+SQL_DATABASE=${3}
+# SQL Server admin username
+SQL_USER=${4}
+# SQL Server admin pwd
+SQL_PASSWORD=${5}
+# Distcomp package location.
+# NOTE: This package is custom built currently and this param will
+# be removed evntually.
 DISTCOMP_LOC=${6}                    
-MLSDISTCOMP_LOC=${7}                 
+# MLSDistcomp package location.
+MLSDISTCOMP_LOC=${7}
+# Machine Learning Server (VM) DNS
 MLS_URL=${8}
-MLS_ADMIN_PWD=${9:-'Welcome1234!'}
-
-print_usage()
-{
-    echo "Usage:    ${0} [-c / --central | -h ] sql_server_dns sql_account sql_password "
-    printf '\n\n'
-    echo "sql_server_dns - "
-    echo "sql_account    - "
-    echo "sql_password   - "
-    for option in "-c" "-h"
-    do
-        case $option in
-        --central|-c)
-        echo "                    --central | -c  install the central vesion of the service instead of the remote version."
-        ;;
-        -h)
-        echo "                    -h              print this message and exit"
-        ;;
-        esac
-    done
-}
-
-# Print help if there are no args passed.
-if [ $# -eq 0 ]; then
-    print_usage
-    exit 0
-fi
-
-if [ $# -gt 0 ]; then
-  # In case there are command line parameters, check there values.
-  case $1 in
-     --central | -c)
-         #No separate environment to install to, so use the root.
-         echo "Installing the Central node version."
-         #The central version exposes a modified set of services and different web UI
-         INSTALL_CENTRAL=true
-         ;;
-     -h)
-         print_usage
-         exit 0
-         ;;
-     *)
-         echo "Error: Unknown option ${1}"
-         exit 1
-         ;;
-  esac
-fi
+# Machine Learning Server a'admin' password
+MLS_ADMIN_PWD=${9}
 
 # Computed variables
 MLSDISTCOMP_PKG_NAME=$(basename ${MLSDISTCOMP_LOC})    
@@ -106,9 +70,12 @@ DISTCOMP_PKG_PATH="${PWD}/${DISTCOMP_PKG_NAME}"
 
 UpdateSystem()
 {
-    echo "Updating Apt and Packages"
+    echo "Updating Apt and Packages..."
+
     sudo apt-get -y update
     sudo apt-get -y install curl jq
+
+    echo "Completed system update"
 }
 
 InstallRPackages()
@@ -127,16 +94,24 @@ InstallRPackages()
     echo "Installing mlsdistcomp package..."
     $RSCRIPT_BINARY -e "install.packages("${MLSDISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type="source")"
 
-    echo "Completed InstallRPackages..."
+    echo "Completed InstallRPackages"
 }
 
 UpdateMLSDistCompSecrets()
 {
-    $MLSDISTCOMP_SECRETS="${MLS_RLIB_PATH}/${MLSDISTCOMP_PKG_NAME%.*}/R/secrets.R"
+    echo "Executing UpdateMLSDistCompSecrets..."
 
-    # make editable
+    # Path where the MLSDistComp secrets are present.
+    # Secrets currently exist in the package. "keyring", envvars are all
+    # potential cleaner options.
+    $MLSDISTCOMP_SECRETS="${MLS_RLIB_PATH}/${MLSDISTCOMP_PKG_NAME%.*}/R/secrets.R"
+    echo "Secrets file is expected at: ${MLSDISTCOMP_SECRETS}"
+
+    # Make secrets editable
+    echo "Making secrets file editable"
     sudo chmod 777 $MLSDISTCOMP_SECRETS
 
+    echo "Update secrets file with the right values"
     tmp_secrets="/tmp/tmpsecrets.R"
     yes | cp -rf $MLSDISTCOMP_SECRETS $tmp_secrets
 
@@ -147,13 +122,19 @@ UpdateMLSDistCompSecrets()
           gsub('{SQL_PASSWORD}',"${SQL_PASSWORD}");
           }1" $MLSDISTCOMP_SECRETS > $tmp_secrets && sudo mv $tmp_secrets $MLSDISTCOMP_SECRETS
 
+    echo $MLSDISTCOMP_SECRETS
+
     # Remove file
     sudo rm -f $tmp_secrets
+
+    echo "Completed UpdateMLSDistCompSecrets"
 }
 
 PublishMRSWebServices()
 {
-    # Set MLS admin password. This restarts the ML Services
+    echo "Executing PublishMRSWebServices..."
+
+    # Set MLS admin password. This also restarts the ML Services
     echo "Setting MLS admin password"    
     sudo dotnet $MLS_ADMINUTIL_PATH -silentoneboxinstall $MLS_ADMIN_PWD
     
@@ -168,10 +149,14 @@ PublishMRSWebServices()
         ${PROFILE} ${MLS_URL} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD} > $bootstrapper_logfile 2>&1
 
     echo < $bootstrapper_logfile
+
+    echo "Completed PublishMRSWebServices"
 }
 
 ConfigureMLSWebNode()
 {
+    echo "Executing ConfigureMLSWebNode..."
+
     # Stop ML Server services
     echo "Stopping ML Services in case they are running..."
     sudo service stop webnode
@@ -197,7 +182,7 @@ ConfigureMLSWebNode()
     echo "Flush iptables..."
     iptables --flush
 
-    echo "MLS web server configuration completed."
+    echo "Completed ConfigureMLSWebNode"
 }
 
 ###############################################################################
