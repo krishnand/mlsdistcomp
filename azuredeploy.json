@@ -394,7 +394,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "[(variables('scriptUriMLSConfigure')]"
+                "[variables('scriptUriMLSConfigure')]"
               ]
             },
             "protectedSettings": {
