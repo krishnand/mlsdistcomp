@@ -25,7 +25,7 @@ MLS_WEBNODE_APPSETTINGS="${MLS_ROOT}/o16n/Microsoft.MLServer.WebNode/appsettings
 MLS_URL_DEFAULT='http://localhost:12800'
 MLS_ADMIN_USER='admin'
 
-if [ ! -d ${MLS_ROOT} ]; then
+if [ ! -d "${MLS_ROOT}" ]; then
     echo "MLS Root directory was not found at - $MLS_ROOT. Exiting..."
     exit 0
 fi
