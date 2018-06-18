@@ -16,7 +16,7 @@
 
 INSTALL_DIR="${HOME}/R"
 CURL_BINARY="/usr/bin/curl"   # Or should this be installed via apt-get?
-RSCRIPT_BINARY="usr/bin/Rscript"
+RSCRIPT_BINARY="/usr/bin/Rscript"
 R_BINARY="/usr/bin/R"
 MLS_ROOT="/opt/microsoft/mlserver/9.2.1"
 MLS_RLIB_PATH="${MLS_ROOT}/libraries/RServer"
