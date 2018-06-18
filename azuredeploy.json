@@ -2,6 +2,24 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "aadAppMLS": {
+      "type": "string",
+      "metadata": {
+        "description": "Application ID of the Client AAD app."
+      }
+    },
+    "aadAppMLSClient": {
+      "type": "string",
+      "metadata": {
+        "description": "Application ID of the AAD app."
+      }
+    },
+    "aadAppMLSClientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The Client secret created on the AAD Client Application."
+      }
+    },
     "adminUsername": {
       "type": "string",
       "metadata": {
@@ -29,6 +47,20 @@
       "metadata": {
         "description": "Name of the VM to be provisioned in the resource group. Also the prefix for related resources."
       }
+    },
+    "pkgDistcomp": {
+      "type": "string",
+      "metadata": {
+        "description": "Distcomp package location"
+      },
+      "defaultValue": "https://github.com/krishnand/mlsdistcomp/blob/master/packages/distcomp_1.0-1.tar.gz"
+    },
+    "pkgMLSDistcomp": {
+      "type": "string",
+      "metadata": {
+        "description": "MLSDistcomp package location"
+      },
+      "defaultValue": "https://github.com/krishnand/mlsdistcomp/blob/master/packages/mlsdistcomp_0.0.0.9000.tar.gz"
     },
     "sqlserverAdminLogin": {
       "type": "string",
@@ -67,6 +99,12 @@
       ],
       "metadata": {
         "description": "Describes the performance level for Edition"
+      }
+    },
+    "tenantName": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure tenant domain. For e.g., contoso.onmicrosoft.com"
       }
     },
     "vmSku": {
@@ -146,6 +184,7 @@
     "scriptNameSql": "mlsdistcompmin.sql",
     "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
     "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
+    "scriptUriMLSBootstrapper": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcomp_bootstrapper.R')]",
     "sqlDatabaseName": "mlsdistcompdb",
     "sqlServerName": "[concat(parameters('dnsLabelPrefix'), 'sql', uniquestring(resourceGroup().id))]",
     "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'sa', uniquestring(resourceGroup().id))]",
@@ -156,6 +195,7 @@
     "virtualNetworkName": "[concat(parameters('dnsLabelPrefix'), 'vnet')]",
     "vmName": "[parameters('dnsLabelPrefix')]",
     "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",
+    "webAppUrl": "[concat('https://', variables('webAppName'), '.azurewebsites.net:12800')]",
     "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appplan', uniqueString(resourceGroup().id))]"
   },
   "resources": [
@@ -339,29 +379,29 @@
         }
       },
       "resources": [
-        //{
-        //  "type": "extensions",
-        //  "name": "ConfigureMLSServer",
-        //  "apiVersion": "[providers('Microsoft.Compute','virtualMachines/extensions').apiVersions[0]]",
-        //  "location": "[resourceGroup().location]",
-        //  "dependsOn": [
-        //    "[resourceId('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-        //  ],
-        //  "properties": {
-        //    "publisher": "Microsoft.OSTCExtensions",
-        //    "type": "CustomScriptForLinux",
-        //    "typeHandlerVersion": "1.4",
-        //    "autoUpgradeMinorVersion": true,
-        //    "settings": {
-        //      "fileUris": [
-        //        "[(variables('scriptUriMLSConfigure')]"
-        //      ]
-        //    },
-        //    "protectedSettings": {
-        //      "commandToExecute": "[concat('bash configuremls.sh \"', parameters('adminPassword'), '\"')]"
-        //    }
-        //  }
-        //},
+        {
+          "type": "extensions",
+          "name": "ConfigureMLSServer",
+          "apiVersion": "[providers('Microsoft.Compute','virtualMachines/extensions').apiVersions[0]]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.OSTCExtensions",
+            "type": "CustomScriptForLinux",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[(variables('scriptUriMLSConfigure')]"
+              ]
+            },
+            "protectedSettings": {
+              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', parameters('pkgDistcomp'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', variables('webAppUrl'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
+            }
+          }
+        },
         {
           "name": "SqlDatabaseDeploy",
           "type": "extensions",
@@ -385,7 +425,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', '\" \"', variables('scriptNameSql'), '\" \"', variables('scriptUriSql'), '\"')]"
+              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptNameSql'), '\" \"', variables('scriptUriSql'))]"
             }
           }
         }

@@ -25,7 +25,7 @@ MLS_WEBNODE_APPSETTINGS="${MLS_ROOT}/o16n/Microsoft.MLServer.WebNode/appsettings
 MLS_URL_DEFAULT='http://localhost:12800'
 MLS_ADMIN_USER='admin'
 
-if [ -d "$MLS_ROOT" ];
+if [ ! -d "$MLS_ROOT" ];
     echo "MLS Root directory was not found at - $MLS_ROOT. Exiting..."
     exit 0
 fi
@@ -35,6 +35,10 @@ fi
 # Arguments
 #
 ###############################################################################
+
+echo "Printing input args..."
+echo $@
+
 # Configure the environment for: "Central" or "Participant"
 PROFILE=${1}
 # SQL Server DNS
@@ -45,16 +49,27 @@ SQL_DATABASE=${3}
 SQL_USER=${4}
 # SQL Server admin pwd
 SQL_PASSWORD=${5}
-# Distcomp package location.
-# NOTE: This package is custom built currently and this param will
-# be removed evntually.
+# Distcomp package location. This package is custom built currently and this param will
+# be removed evntually when mlsdistcomp builds an extension
 DISTCOMP_LOC=${6}                    
 # MLSDistcomp package location.
 MLSDISTCOMP_LOC=${7}
+# Script where the MLSDistcomp bootstrapper script
+# is located. This script deploys the web services
+MLS_BOOTSTRAPPER_LOC=${8}
 # Machine Learning Server (VM) DNS
-MLS_URL=${8}
-# Machine Learning Server a'admin' password
-MLS_ADMIN_PWD=${9}
+MLS_URL=${9}
+# Machine Learning Server 'admin' password
+MLS_ADMIN_PWD=${10}
+# Domain of the Azure tenant
+TENANT_NAME=${11}
+# AAD ApplicationID for the MLS Server
+MLS_APPID=${12}
+# AAD 'Client' ApplicationID configured with clientsecret and is has permissions
+# setup for $MLS_APPID
+MLS_CLIENTID=${13}
+# Secret key on the AAD 'Client' Application
+MLS_CLIENT_SECRET=${14}
 
 # Computed variables
 MLSDISTCOMP_PKG_NAME=$(basename ${MLSDISTCOMP_LOC})    
@@ -89,10 +104,10 @@ InstallRPackages()
     wget -q $MLSDISTCOMP_LOC
     
     echo "Installing distcomp package..."
-    $RSCRIPT_BINARY -e "install.packages("${DISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type="source")"
+    $RSCRIPT_BINARY -e "install.packages("${DISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type='source')"
 
     echo "Installing mlsdistcomp package..."
-    $RSCRIPT_BINARY -e "install.packages("${MLSDISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type="source")"
+    $RSCRIPT_BINARY -e "install.packages("${MLSDISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type='source')"
 
     echo "Completed InstallRPackages"
 }
@@ -101,32 +116,14 @@ UpdateMLSDistCompSecrets()
 {
     echo "Executing UpdateMLSDistCompSecrets..."
 
-    # Path where the MLSDistComp secrets are present.
-    # Secrets currently exist in the package. "keyring", envvars are all
-    # potential cleaner options.
-    $MLSDISTCOMP_SECRETS="${MLS_RLIB_PATH}/${MLSDISTCOMP_PKG_NAME%.*}/R/secrets.R"
-    echo "Secrets file is expected at: ${MLSDISTCOMP_SECRETS}"
+    # We are going to use the keyring R package to store and access secrets.
+    echo "Install the keyring package and dependencies..."
+    $RSCRIPT_BINARY -e "install.packages('libsecret');install.packages('keyring')"
 
-    # Make secrets editable
-    echo "Making secrets file editable"
-    sudo chmod 777 $MLSDISTCOMP_SECRETS
-
-    echo "Update secrets file with the right values"
-    tmp_secrets="/tmp/tmpsecrets.R"
-    yes | cp -rf $MLSDISTCOMP_SECRETS $tmp_secrets
-
-    # This script assumes that the MLSDistComp packages contains a secrets.R
-    awk "{gsub('{SQL_SERVER}',"${SQL_SERVER}");
-          gsub('{SQL_DATABASE}',"${SQL_DATABASE}");
-          gsub('{SQL_USER}',"${SQL_USER}");
-          gsub('{SQL_PASSWORD}',"${SQL_PASSWORD}");
-          }1" $MLSDISTCOMP_SECRETS > $tmp_secrets && sudo mv $tmp_secrets $MLSDISTCOMP_SECRETS
-
-    echo $MLSDISTCOMP_SECRETS
-
-    # Remove file
-    sudo rm -f $tmp_secrets
-
+    echo "Setting secrets in the default keyring..."
+    $RSCRIPT_BINARY -e "library(keyring);key_set_with_value('SQL_SERVERNAME',password="${SQL_SERVER}");key_set_with_value('SQL_DBNAME',password="${SQL_DATABASE}");
+                            key_set_with_value('SQL_USER',password="${SQL_USER}");key_set_with_value('SQL_PASSWORD',password="${SQL_PASSWORD}");"
+    
     echo "Completed UpdateMLSDistCompSecrets"
 }
 
@@ -138,14 +135,22 @@ PublishMRSWebServices()
     echo "Setting MLS admin password"    
     sudo dotnet $MLS_ADMINUTIL_PATH -silentoneboxinstall $MLS_ADMIN_PWD
     
-    # Call the bootstrapper RScript in the mlsdistcomp package to deploy web services
-    $MLSDISTCOMP_BOOTSTRAPPER="${MLS_RLIB_PATH}/${MLSDISTCOMP_PKG_NAME%.*}/R/mlsdistcomp_bootstrapper.R"
-    echo "Executing mlsdistcomp bootstrapper ${MLSDISTCOMP_BOOTSTRAPPER}..."
-    echo "Args passed: ${PROFILE} ${MLS_URL_DEFAULT} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD}"
+    echo "Fetching mlsdistcomp bootstrapper script from ${MLS_BOOTSTRAPPER_LOC}"
+    wget -q $MLS_BOOTSTRAPPER_LOC
 
-    # Expected args: profile <- args[1], url <- args[2], username <- args[3], password <- args[4]
+    MLS_BOOTSTRAPPER_SCRIPT_NAME=$(basename ${MLS_BOOTSTRAPPER_LOC})
+    MLS_BOOTSTRAPPER_SCRIPT_PATH="${PWD}/${MLS_BOOTSTRAPPER_SCRIPT_NAME}"    
+
+    # Path where the mlsdistcomp R script is present.
+    MLSDISTCOMP_RSCRIPT_MAIN_PATH="${MLS_RLIB_PATH}/mlsdistcomp/R/mlsdistcomp.R"    
+
+    # Call the bootstrapper RScript in the mlsdistcomp package to deploy web services    
+    echo "Executing mlsdistcomp bootstrapper ${MLS_BOOTSTRAPPER_SCRIPT_PATH}..."
+    echo "Args passed: ${PROFILE} ${MLS_URL_DEFAULT} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD} ${MLSDISTCOMP_RSCRIPT_MAIN_PATH}"
+
+    # Expected args: profile <- args[1], url <- args[2], username <- args[3], password <- args[4], mlsdistcomppath <- args[5] 
     bootstrapper_logfile=$(mktemp)
-    $RSCRIPT_BINARY --no-save --no-restore --verbose ${MLSDISTCOMP_BOOTSTRAPPER} 
+    $RSCRIPT_BINARY --no-save --no-restore --verbose ${MLS_BOOTSTRAPPER_SCRIPT_PATH} 
         ${PROFILE} ${MLS_URL} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD} > $bootstrapper_logfile 2>&1
 
     echo < $bootstrapper_logfile
@@ -171,7 +176,7 @@ ConfigureMLSWebNode()
             .Authentication.AzureActiveDirectory.Audience=${MLS_APPID}|
             .Authentication.AzureActiveDirectory.ClientId=${MLS_CLIENTID}|
             .Authentication.AzureActiveDirectory.Key="${MLS_CLIENT_SECRET}"|
-            .Authentication.AzureActiveDirectory.KeyEncrypted=false" "${MLS_WEBNODE_APPSETTINGS}"
+            .Authentication.AzureActiveDirectory.KeyEncrypted=false" ${MLS_WEBNODE_APPSETTINGS}
     
     # Restart ML Server services
     echo "Restart ML Server..."
