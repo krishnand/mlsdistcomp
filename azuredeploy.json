@@ -401,34 +401,34 @@
               "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', parameters('pkgDistcomp'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', variables('webAppUrl'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
             }
           }
-        },
-        {
-          "name": "SqlDatabaseDeploy",
-          "type": "extensions",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2016-03-30",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
-            "[resourceId('Microsoft.Sql/servers/databases', variables('sqlServerName'), variables('sqlDatabaseName'))]"
-          ],
-          "tags": {
-            "displayName": "SqlDatabaseDeploy"
-          },
-          "properties": {
-            "publisher": "Microsoft.OSTCExtensions",
-            "type": "CustomScriptForLinux",
-            "typeHandlerVersion": "1.4",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "[variables('scriptUriSqlDeploy')]"
-              ]
-            },
-            "protectedSettings": {
-              "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptNameSql'), '\" \"', variables('scriptUriSql'))]"
-            }
-          }
         }
+        //{
+        //  "name": "SqlDatabaseDeploy",
+        //  "type": "extensions",
+        //  "location": "[resourceGroup().location]",
+        //  "apiVersion": "2016-03-30",
+        //  "dependsOn": [
+        //    "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
+        //    "[resourceId('Microsoft.Sql/servers/databases', variables('sqlServerName'), variables('sqlDatabaseName'))]"
+        //  ],
+        //  "tags": {
+        //    "displayName": "SqlDatabaseDeploy"
+        //  },
+        //  "properties": {
+        //    "publisher": "Microsoft.OSTCExtensions",
+        //    "type": "CustomScriptForLinux",
+        //    "typeHandlerVersion": "1.4",
+        //    "autoUpgradeMinorVersion": true,
+        //    "settings": {
+        //      "fileUris": [
+        //        "[variables('scriptUriSqlDeploy')]"
+        //      ]
+        //    },
+        //    "protectedSettings": {
+        //      "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptNameSql'), '\" \"', variables('scriptUriSql'))]"
+        //    }
+        //  }
+        //}
         //,
         //{
         //  "name": "WebAppDeploy",
