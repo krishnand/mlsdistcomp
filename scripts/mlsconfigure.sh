@@ -95,8 +95,9 @@ InstallRPackages()
     sudo su - -c "Rscript -e \"install.packages('devtools');library(devtools);devtools::install_github('krishnand/distcomp')\""
 
     echo "Installing mlsdistcomp package..."
+    # rlist package does not install with Imports in the mlsdistcomp. Explicitly adding it
     # lib='"${MLS_RLIB_PATH}" - Not needed. Lib path defaults to ML Server's lib path
-    sudo su - -c "Rscript -e \"install.packages('"${MLSDISTCOMP_PKG_PATH}"', repos=NULL, type='source')\""
+    sudo su - -c "Rscript -e \"install.packages('rlist');install.packages('"${MLSDISTCOMP_PKG_PATH}"', repos=NULL, type='source')\""
 
     echo "Completed InstallRPackages"
 }
@@ -110,8 +111,7 @@ UpdateMLSDistCompSecrets()
     sudo su - -c "Rscript -e \"source('https://install-github.me/r-lib/keyring')\""
 
     echo "Setting secrets in the default keyring..."
-    sudo su - -c "Rscript -e \"library(keyring);key_set_with_value('SQL_SERVERNAME',password='"${SQL_SERVER}"');key_set_with_value('SQL_DBNAME',password='"${SQL_DATABASE}"');
-                            key_set_with_value('SQL_USER',password='"${SQL_USER}"');key_set_with_value('SQL_PASSWORD',password='"${SQL_PASSWORD}"')\""
+    sudo su - -c "Rscript -e \"library(keyring);key_set_with_value('SQL_SERVERNAME',password='"${SQL_SERVER}"');key_set_with_value('SQL_DBNAME',password='"${SQL_DATABASE}"');key_set_with_value('SQL_USER',password='"${SQL_USER}"');key_set_with_value('SQL_PASSWORD',password='"${SQL_PASSWORD}"')\""
     
     echo "Completed UpdateMLSDistCompSecrets"
 }
@@ -131,7 +131,7 @@ PublishMRSWebServices()
     wget -q $MLS_BOOTSTRAPPER_LOC -O ${MLS_BOOTSTRAPPER_SCRIPT_PATH}    
 
     # Path where the mlsdistcomp R script is present.
-    # MLSDISTCOMP_RSCRIPT_MAIN_PATH="${MLS_RLIB_PATH}/mlsdistcomp/R/mlsdistcomp.R"    
+    MLSDISTCOMP_RSCRIPT_MAIN_PATH="${MLS_RLIB_PATH}/mlsdistcomp/R/mlsdistcomp"
 
     # Call the bootstrapper RScript in the mlsdistcomp package to deploy web services    
     echo "Executing mlsdistcomp bootstrapper ${MLS_BOOTSTRAPPER_SCRIPT_PATH}..."
@@ -156,16 +156,16 @@ ConfigureMLSWebNode()
     sudo service computenode stop    
 
     # Update Host name & AAD Settings
-    echo "Updating MLS Web Node appsettings..."
-    jq ".Kestrel.Host=\""${MLS_URL}"\"|
-            .Authentication.AdminAccount.Enabled=false|
-            .Authentication.AzureActiveDirectory.Enabled=true|
-            .Authentication.AzureActiveDirectory.Authority=\""https://login.windows.net/${TENANT_NAME}"\"|
-            .Authentication.AzureActiveDirectory.Audience=\""${MLS_APPID}"\"|
-            .Authentication.AzureActiveDirectory.ClientId=\""${MLS_CLIENTID}"\"|
-            .Authentication.AzureActiveDirectory.Key=\""${MLS_CLIENT_SECRET}"\"|
-            .Authentication.AzureActiveDirectory.KeyEncrypted=false" ${MLS_WEBNODE_APPSETTINGS}
-    
+    MLS_WEBNODE_APPSETTINGS_TMP='/tmp/appsettings.json'
+    echo "Updating MLS Web Node appsettings to ${MLS_WEBNODE_APPSETTINGS_TMP}..."
+    jq ".Kestrel.Host=\""${MLS_URL}"\"|.Authentication.AdminAccount.Enabled=false|.Authentication.AzureActiveDirectory.Enabled=true|.Authentication.AzureActiveDirectory.Authority=\""https://login.windows.net/${TENANT_NAME}"\"|.Authentication.AzureActiveDirectory.Audience=\""${MLS_APPID}"\"|.Authentication.AzureActiveDirectory.ClientId=\""${MLS_CLIENTID}"\"|.Authentication.AzureActiveDirectory.Key=\""${MLS_CLIENT_SECRET}"\"|.Authentication.AzureActiveDirectory.KeyEncrypted=false" ${MLS_WEBNODE_APPSETTINGS} > $MLS_WEBNODE_APPSETTINGS_TMP
+
+    echo "Updating permissions on ${MLS_WEBNODE_APPSETTINGS} to allow writes..."
+    sudo chmod u+w ${MLS_WEBNODE_APPSETTINGS}
+
+    echo "Overwriting ${MLS_WEBNODE_APPSETTINGS} with ${MLS_WEBNODE_APPSETTINGS_TMP}..."
+    \cp ${MLS_WEBNODE_APPSETTINGS_TMP} ${MLS_WEBNODE_APPSETTINGS}
+
     # Restart ML Server services
     echo "Restart ML Server..."
     sudo service computenode start
