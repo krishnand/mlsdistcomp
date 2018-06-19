@@ -13,11 +13,7 @@
 # KRISHNAD 12 June 2018 krishnad@microsoft.com
 ################################################################################
 
-
-INSTALL_DIR="${HOME}/R"
-CURL_BINARY="/usr/bin/curl"   # Or should this be installed via apt-get?
 RSCRIPT_BINARY="/usr/bin/Rscript"
-R_BINARY="/usr/bin/R"
 MLS_ROOT="/opt/microsoft/mlserver/9.2.1"
 MLS_RLIB_PATH="${MLS_ROOT}/libraries/RServer"
 MLS_ADMINUTIL_PATH="${MLS_ROOT}/o16n/Microsoft.MLServer.Utils.AdminUtil/Microsoft.MLServer.Utils.AdminUtil.dll"
@@ -85,10 +81,11 @@ DISTCOMP_PKG_PATH="${PWD}/${DISTCOMP_PKG_NAME}"
 
 UpdateSystem()
 {
-    echo "Updating Apt and Packages..."
-
+    echo "Updating apt and packages..."
     sudo apt-get -y update
-    sudo apt-get -y install curl jq
+
+    echo "Installing jq, curl and libsecret packages..."
+    sudo apt-get -y install curl jq libsecret-1-dev
 
     echo "Completed system update"
 }
@@ -97,17 +94,14 @@ InstallRPackages()
 {
     echo "Executing InstallRPackages..."
 
-    echo "Fetching distcomp package from ${DISTCOMP_LOC}"
-    wget -q $DISTCOMP_LOC
-
     echo "Fetching mlsdistcomp package from ${MLSDISTCOMP_LOC}"
     wget -q $MLSDISTCOMP_LOC
     
     echo "Installing distcomp package..."
-    $RSCRIPT_BINARY -e "install.packages("${DISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type='source')"
+    sudo su - -c "Rscript -e \"install.packages('devtools');library(devtools);devtools::install_github('krishnand/distcomp')\""
 
     echo "Installing mlsdistcomp package..."
-    $RSCRIPT_BINARY -e "install.packages("${MLSDISTCOMP_PKG_PATH}", lib=${MLS_RLIB_PATH}, repos=NULL, type='source')"
+    sudo su - -c "Rscript -e \"install.packages('"${MLSDISTCOMP_PKG_PATH}"', lib='"${MLS_RLIB_PATH}", repos=NULL, type='source')\""
 
     echo "Completed InstallRPackages"
 }
@@ -117,12 +111,12 @@ UpdateMLSDistCompSecrets()
     echo "Executing UpdateMLSDistCompSecrets..."
 
     # We are going to use the keyring R package to store and access secrets.
-    echo "Install the keyring package and dependencies..."
-    $RSCRIPT_BINARY -e "install.packages('libsecret');install.packages('keyring')"
+    echo "Install the keyring package..."
+    sudo su - -c "Rscript -e \"source('https://install-github.me/r-lib/keyring')\""
 
     echo "Setting secrets in the default keyring..."
-    $RSCRIPT_BINARY -e "library(keyring);key_set_with_value('SQL_SERVERNAME',password="${SQL_SERVER}");key_set_with_value('SQL_DBNAME',password="${SQL_DATABASE}");
-                            key_set_with_value('SQL_USER',password="${SQL_USER}");key_set_with_value('SQL_PASSWORD',password="${SQL_PASSWORD}");"
+    sudo su - -c "Rscript -e \"library(keyring);key_set_with_value('SQL_SERVERNAME',password='"${SQL_SERVER}"');key_set_with_value('SQL_DBNAME',password='"${SQL_DATABASE}"');
+                            key_set_with_value('SQL_USER',password='"${SQL_USER}"');key_set_with_value('SQL_PASSWORD',password='"${SQL_PASSWORD}"')\""
     
     echo "Completed UpdateMLSDistCompSecrets"
 }
@@ -164,28 +158,28 @@ ConfigureMLSWebNode()
 
     # Stop ML Server services
     echo "Stopping ML Services in case they are running..."
-    sudo service stop webnode
-    sudo service stop computenode    
+    sudo service webnode stop
+    sudo service computenode stop    
 
     # Update Host name & AAD Settings
     echo "Updating MLS Web Node appsettings..."
-    jq ".Kestrel.Host="${MLS_URL}"|
+    jq ".Kestrel.Host=\""${MLS_URL}"\"|
             .Authentication.AdminAccount.Enabled=false|
             .Authentication.AzureActiveDirectory.Enabled=true|
-            .Authentication.AzureActiveDirectory.Authority="https://login.windows.net/${TENANT_NAME}"|
-            .Authentication.AzureActiveDirectory.Audience=${MLS_APPID}|
-            .Authentication.AzureActiveDirectory.ClientId=${MLS_CLIENTID}|
-            .Authentication.AzureActiveDirectory.Key="${MLS_CLIENT_SECRET}"|
+            .Authentication.AzureActiveDirectory.Authority=\""https://login.windows.net/${TENANT_NAME}"\"|
+            .Authentication.AzureActiveDirectory.Audience=\""${MLS_APPID}"\"|
+            .Authentication.AzureActiveDirectory.ClientId=\""${MLS_CLIENTID}"\"|
+            .Authentication.AzureActiveDirectory.Key=\""${MLS_CLIENT_SECRET}"\"|
             .Authentication.AzureActiveDirectory.KeyEncrypted=false" ${MLS_WEBNODE_APPSETTINGS}
     
     # Restart ML Server services
     echo "Restart ML Server..."
-    sudo service start computenode
-    sudo service start webnode	
+    sudo service computenode start
+    sudo service webnode start	
 
     # Flush iptables
     echo "Flush iptables..."
-    iptables --flush
+    sudo iptables --flush
 
     echo "Completed ConfigureMLSWebNode"
 }
