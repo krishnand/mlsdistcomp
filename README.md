@@ -15,6 +15,19 @@ application for each site in the network.
 
 ## Configure Azure Active Directory Applications
 
+**[Azure Active Directory](https://azure.microsoft.com/en-us/services/active-directory/)** is an Azure service that is used to secure identities, applications on cloud and in hybrid environments. To operationalize `mlsdistcomp` at a site, 2 Azure Active Directory applications are required. 
+One that is the identity of the ML Server and the other a *client* AAD application in the same tenant that has
+permissions to access the ML Server AAD application. The following steps describe how you can provision these:
+
+* Browse to the **[Azure portal](https://ms.porta.azure.com)** and launch the Cloud Shell (_look for bash prompt icon on the portal toolbar_)
+* Execute this command to create the AAD Application for the ML Server: 
+```bash
+az ad app create --display-name '<a unique name for your mlsdistcomp aad app for.e.g, contosomlsdistcompapp>'
+```
+
+
+
+
 
 ## Configuring Azure Resources for the MLSDistComp network
 
