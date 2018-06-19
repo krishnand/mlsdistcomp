@@ -45,33 +45,24 @@ SQL_DATABASE=${3}
 SQL_USER=${4}
 # SQL Server admin pwd
 SQL_PASSWORD=${5}
-# Distcomp package location. This package is custom built currently and this param will
-# be removed evntually when mlsdistcomp builds an extension
-DISTCOMP_LOC=${6}                    
 # MLSDistcomp package location.
-MLSDISTCOMP_LOC=${7}
+MLSDISTCOMP_LOC=${6}
 # Script where the MLSDistcomp bootstrapper script
 # is located. This script deploys the web services
-MLS_BOOTSTRAPPER_LOC=${8}
+MLS_BOOTSTRAPPER_LOC=${7}
 # Machine Learning Server (VM) DNS
-MLS_URL=${9}
+MLS_URL=${8}
 # Machine Learning Server 'admin' password
-MLS_ADMIN_PWD=${10}
+MLS_ADMIN_PWD=${9}
 # Domain of the Azure tenant
-TENANT_NAME=${11}
+TENANT_NAME=${10}
 # AAD ApplicationID for the MLS Server
-MLS_APPID=${12}
+MLS_APPID=${11}
 # AAD 'Client' ApplicationID configured with clientsecret and is has permissions
 # setup for $MLS_APPID
-MLS_CLIENTID=${13}
+MLS_CLIENTID=${12}
 # Secret key on the AAD 'Client' Application
-MLS_CLIENT_SECRET=${14}
-
-# Computed variables
-MLSDISTCOMP_PKG_NAME=$(basename ${MLSDISTCOMP_LOC})    
-MLSDISTCOMP_PKG_PATH="${PWD}/${MLSDISTCOMP_PKG_NAME}"
-DISTCOMP_PKG_NAME=$(basename ${DISTCOMP_LOC})    
-DISTCOMP_PKG_PATH="${PWD}/${DISTCOMP_PKG_NAME}"
+MLS_CLIENT_SECRET=${13}
 
 ###############################################################################
 #
@@ -94,14 +85,18 @@ InstallRPackages()
 {
     echo "Executing InstallRPackages..."
 
+    # Download mlsdistcomp package to the tmp dir
+    MLSDISTCOMP_PKG_PATH='/tmp/mlsdistcomp.tar.gz'
+
     echo "Fetching mlsdistcomp package from ${MLSDISTCOMP_LOC}"
-    wget -q $MLSDISTCOMP_LOC
+    wget -q ${MLSDISTCOMP_LOC} -O ${MLSDISTCOMP_PKG_PATH}
     
     echo "Installing distcomp package..."
     sudo su - -c "Rscript -e \"install.packages('devtools');library(devtools);devtools::install_github('krishnand/distcomp')\""
 
     echo "Installing mlsdistcomp package..."
-    sudo su - -c "Rscript -e \"install.packages('"${MLSDISTCOMP_PKG_PATH}"', lib='"${MLS_RLIB_PATH}", repos=NULL, type='source')\""
+    # lib='"${MLS_RLIB_PATH}" - Not needed. Lib path defaults to ML Server's lib path
+    sudo su - -c "Rscript -e \"install.packages('"${MLSDISTCOMP_PKG_PATH}"', repos=NULL, type='source')\""
 
     echo "Completed InstallRPackages"
 }
@@ -127,16 +122,16 @@ PublishMRSWebServices()
 
     # Set MLS admin password. This also restarts the ML Services
     echo "Setting MLS admin password"    
-    sudo dotnet $MLS_ADMINUTIL_PATH -silentoneboxinstall $MLS_ADMIN_PWD
+    sudo dotnet $MLS_ADMINUTIL_PATH -silentoneboxinstall $MLS_ADMIN_PWD    
     
-    echo "Fetching mlsdistcomp bootstrapper script from ${MLS_BOOTSTRAPPER_LOC}"
-    wget -q $MLS_BOOTSTRAPPER_LOC
-
     MLS_BOOTSTRAPPER_SCRIPT_NAME=$(basename ${MLS_BOOTSTRAPPER_LOC})
-    MLS_BOOTSTRAPPER_SCRIPT_PATH="${PWD}/${MLS_BOOTSTRAPPER_SCRIPT_NAME}"    
+    MLS_BOOTSTRAPPER_SCRIPT_PATH="/tmp/${MLS_BOOTSTRAPPER_SCRIPT_NAME}"    
+
+    echo "Fetching mlsdistcomp bootstrapper script from ${MLS_BOOTSTRAPPER_LOC} to ${MLS_BOOTSTRAPPER_SCRIPT_PATH}"
+    wget -q $MLS_BOOTSTRAPPER_LOC -O ${MLS_BOOTSTRAPPER_SCRIPT_PATH}    
 
     # Path where the mlsdistcomp R script is present.
-    MLSDISTCOMP_RSCRIPT_MAIN_PATH="${MLS_RLIB_PATH}/mlsdistcomp/R/mlsdistcomp.R"    
+    # MLSDISTCOMP_RSCRIPT_MAIN_PATH="${MLS_RLIB_PATH}/mlsdistcomp/R/mlsdistcomp.R"    
 
     # Call the bootstrapper RScript in the mlsdistcomp package to deploy web services    
     echo "Executing mlsdistcomp bootstrapper ${MLS_BOOTSTRAPPER_SCRIPT_PATH}..."
@@ -144,8 +139,7 @@ PublishMRSWebServices()
 
     # Expected args: profile <- args[1], url <- args[2], username <- args[3], password <- args[4], mlsdistcomppath <- args[5] 
     bootstrapper_logfile=$(mktemp)
-    $RSCRIPT_BINARY --no-save --no-restore --verbose ${MLS_BOOTSTRAPPER_SCRIPT_PATH} 
-        ${PROFILE} ${MLS_URL} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD} > $bootstrapper_logfile 2>&1
+    sudo su - -c "Rscript --no-save --no-restore --verbose \"${MLS_BOOTSTRAPPER_SCRIPT_PATH}\" \"${PROFILE}"\ \"${MLS_URL}\" \"${MLS_ADMIN_USER}\" \"${MLS_ADMIN_PWD}\"" > $bootstrapper_logfile 2>&1"
 
     echo < $bootstrapper_logfile
 

@@ -47,20 +47,13 @@
       "metadata": {
         "description": "Name of the VM to be provisioned in the resource group. Also the prefix for related resources."
       }
-    },
-    "pkgDistcomp": {
-      "type": "string",
-      "metadata": {
-        "description": "Distcomp package location"
-      },
-      "defaultValue": "https://github.com/krishnand/mlsdistcomp/blob/master/packages/distcomp_1.0-1.tar.gz"
-    },
+    },    
     "pkgMLSDistcomp": {
       "type": "string",
       "metadata": {
         "description": "MLSDistcomp package location"
       },
-      "defaultValue": "https://github.com/krishnand/mlsdistcomp/blob/master/packages/mlsdistcomp_0.0.0.9000.tar.gz"
+      "defaultValue": "https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/mlsdistcomp_0.1.0.0000.tar.gz"
     },
     "sqlserverAdminLogin": {
       "type": "string",
@@ -398,7 +391,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', parameters('pkgDistcomp'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', variables('webAppUrl'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
+              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', variables('webAppUrl'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
             }
           }
         }

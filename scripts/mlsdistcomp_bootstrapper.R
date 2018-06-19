@@ -1,9 +1,9 @@
 #!/usr/bin/env RScript
 
-print('Starting bootstrap routine...')
+# These packages to have be installed 
+# for the bootstrapper to work
 
-# These packages to have been installed.
-# mlsdistcomp installs all dependencies.
+print('Starting bootstrap routine...')
 
 print('Loading mrsdeploy...')
 library(mrsdeploy)
@@ -29,8 +29,8 @@ if (length(args)<5) {
 
   profile <- args[1]
   url <- args[2]
-  username <- args[3]
-  password <- args[4]
+  user <- args[3]
+  pwd <- args[4]
   mlsdistcomp_path <- args[5]
 
   if(length(args)==6){
@@ -39,11 +39,11 @@ if (length(args)<5) {
     fn <- 'register'
   }
 
-  print('Calling mlslogin...')
-  mlsLogin(url=url, username=username, password=password)
+  sprintf('Calling mlslogin with parameters %s %s %s', url, user, pwd)
+  mlsLogin(url=url, username=user, password=pwd)
 
-  print(paste0('Calling fn...: '), fn)
-  do.call(fn)
+  print('Calling fn...: ', fn)
+  do.call(fn, as.character(profile))
 
   print('Completed bootstrap routine.')
 }
