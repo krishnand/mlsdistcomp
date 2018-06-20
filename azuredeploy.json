@@ -172,10 +172,8 @@
     "mlServerUrl": "[reference(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))).IpAddress]",
     "networkSecurityGroupName": "[concat(parameters('dnsLabelPrefix'), 'nsg')]",
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
-    "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",
-    "scriptUriSqlDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/sqldbcreate.sh')]",
-    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts')]",
-    "scriptNameSql": "mlsdistcompmin.sql",
+    "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",    
+    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcompmin.sql')]",    
     "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
     "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
     "scriptUriMLSBootstrapper": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcomp_bootstrapper.R')]",
@@ -392,38 +390,10 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', variables('mlServerUrl'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
+              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', variables('mlServerUrl'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
             }
           }
         }
-        //{
-        //  "name": "SqlDatabaseDeploy",
-        //  "type": "extensions",
-        //  "location": "[resourceGroup().location]",
-        //  "apiVersion": "2016-03-30",
-        //  "dependsOn": [
-        //    "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
-        //    "[resourceId('Microsoft.Sql/servers/databases', variables('sqlServerName'), variables('sqlDatabaseName'))]"
-        //  ],
-        //  "tags": {
-        //    "displayName": "SqlDatabaseDeploy"
-        //  },
-        //  "properties": {
-        //    "publisher": "Microsoft.OSTCExtensions",
-        //    "type": "CustomScriptForLinux",
-        //    "typeHandlerVersion": "1.4",
-        //    "autoUpgradeMinorVersion": true,
-        //    "settings": {
-        //      "fileUris": [
-        //        "[variables('scriptUriSqlDeploy')]"
-        //      ]
-        //    },
-        //    "protectedSettings": {
-        //      "commandToExecute": "[concat('bash sqldbcreate.sh \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptNameSql'), '\" \"', variables('scriptUriSql'))]"
-        //    }
-        //  }
-        //}
-        //,
         //{
         //  "name": "WebAppDeploy",
         //  "type": "extensions",

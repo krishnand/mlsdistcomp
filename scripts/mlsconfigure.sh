@@ -47,24 +47,26 @@ SQL_DBNAME=${3}
 SQL_USER=${4}
 # SQL Server admin pwd
 SQL_USERPWD=${5}
+# SQL DB Script
+SQL_DISTCOMP_LOC=${6}
 # MLSDistcomp package location.
-MLSDISTCOMP_LOC=${6}
+MLSDISTCOMP_LOC=${7}
 # Script where the MLSDistcomp bootstrapper script
 # is located. This script deploys the web services
-MLS_BOOTSTRAPPER_LOC=${7}
+MLS_BOOTSTRAPPER_LOC=${8}
 # Machine Learning Server (VM) DNS
-MLS_DNS_NAME_OR_IP=${8}
+MLS_DNS_NAME_OR_IP=${9}
 # Machine Learning Server 'admin' password
-MLS_ADMIN_PWD=${9}
+MLS_ADMIN_PWD=${10}
 # Domain of the Azure tenant
-TENANT_NAME=${10}
+TENANT_NAME=${11}
 # AAD ApplicationID for the MLS Server
-MLS_APPID=${11}
+MLS_APPID=${12}
 # AAD 'Client' ApplicationID configured with clientsecret and is has permissions
 # setup for $MLS_APPID
-MLS_CLIENTID=${12}
+MLS_CLIENTID=${13}
 # Secret key on the AAD 'Client' Application
-MLS_CLIENT_SECRET=${13}
+MLS_CLIENT_SECRET=${14}
 
 ###############################################################################
 #
@@ -80,7 +82,38 @@ UpdateSystem()
     echo "Installing jq, curl and libsecret packages..."
     sudo apt-get -y install curl jq libsecret-1-dev
 
+    #
+    # To Install SQL tools on vanilla Ubuntu 16.04 - enable section below. Ubuntu DSVM already
+    # has sql tools so skipping.
+    # https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools?view=sql-server-linux-2017
+    #
+
+    #curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+    #curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+    #sudo apt-get update 
+    #sudo apt-get install mssql-tools
+    #echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+    #source ~/.bashrc
+
     echo "Completed system update"
+}
+
+ConfigureSQLDatabase()
+{
+    echo "Executing ConfigureSQLDatabase..."   
+
+    #
+    # Download SQL db script locally
+    #    
+    SQL_SCRIPT_PATH='/tmp/mlsdistcomp.sql'
+    wget -q ${SQL_DISTCOMP_LOC} -O ${SQL_SCRIPT_PATH}
+    echo 'Script downloaded'
+
+    #
+    # Execute SQL CMD to provision execute schema creation script
+    #
+    sudo su - -c "sqlcmd -S ${SQL_SERVERNAME}.database.windows.net -U \"${SQL_USER}@${SQL_SERVERNAME}\" -P ${SQL_USERPWD} -d ${SQL_DBNAME} -i ${SQL_SCRIPT_PATH}"
+    echo "Completed ConfigureSQLDatabase"    
 }
 
 InstallRPackages()
@@ -121,14 +154,26 @@ UpdateMLSDistCompSecrets()
     sudo mkdir ${MLS_APP_FOLDER}
     sudo chmod 777 ${MLS_APP_FOLDER}
 
-    echo "Checking and removing file '${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}'"
-    if [ -f "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}" ] ; then
-        sudo rm -f "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
+    MLSDISTCOMP_SECRETS="${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
+    echo "Checking and removing file - ${MLSDISTCOMP_SECRETS}"
+    if [ -f "${MLSDISTCOMP_SECRETS}" ] ; then
+        sudo rm -f "${MLSDISTCOMP_SECRETS}"
     fi
+
+    ###############################################
+    # Expected format for the db secrets (sql azure)
+    # server = "tcp:mrsdistmaster.database.windows.net,1433",
+    # database = <as-is>
+    # user = "mrssqladmin@mrsdistmaster",
+    # password = <as-is>
+    ###############################################
+
+    SQL_SERVERNAME_FORMATTED="tcp:${SQL_SERVERNAME}.database.windows.net,1433"
+    SQL_USER_FORMATTED="${SQL_USER}@${SQL_SERVERNAME}"
 
     echo "Creating and adding content to file '${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}'"
     echo "SQL_SERVERNAME,SQL_DBNAME,SQL_USER,SQL_USERPWD" >> "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
-    echo "${SQL_SERVERNAME},${SQL_DBNAME},${SQL_USER},${SQL_USERPWD}" >> "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
+    echo "${SQL_SERVERNAME_FORMATTED},${SQL_DBNAME},${SQL_USER_FORMATTED},${SQL_USERPWD}" >> "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
 
     echo "Completed UpdateMLSDistCompSecrets"
     ###############################################################
@@ -218,6 +263,7 @@ echo "This script has been tested against the Azure Ubuntu DSVM images"
 echo "Other OS Versions may work but remain untested."
 
 UpdateSystem
+ConfigureSQLDatabase
 InstallRPackages
 UpdateMLSDistCompSecrets
 PublishMRSWebServices
