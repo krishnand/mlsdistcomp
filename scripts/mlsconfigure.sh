@@ -53,7 +53,7 @@ MLSDISTCOMP_LOC=${6}
 # is located. This script deploys the web services
 MLS_BOOTSTRAPPER_LOC=${7}
 # Machine Learning Server (VM) DNS
-MLS_URL=${8}
+MLS_DNS_NAME_OR_IP=${8}
 # Machine Learning Server 'admin' password
 MLS_ADMIN_PWD=${9}
 # Domain of the Azure tenant
@@ -167,9 +167,9 @@ PublishMRSWebServices()
 
     # Expected args: profile <- args[1], url <- args[2], username <- args[3], password <- args[4], mlsdistcomppath <- args[5] 
     bootstrapper_logfile=$(mktemp)    
-    sudo su - -c "Rscript --no-save --no-restore --verbose \"${MLS_BOOTSTRAPPER_SCRIPT_PATH}\" \'${PROFILE}\' \'${MLS_URL}\' \'${MLS_ADMIN_USER}\' \'${MLS_ADMIN_PWD}\' \'${MLSDISTCOMP_RSCRIPT_MAIN_PATH}\' > $bootstrapper_logfile 2>&1"
+    sudo su - -c "Rscript --no-save --no-restore --verbose \"${MLS_BOOTSTRAPPER_SCRIPT_PATH}\" ${PROFILE} ${MLS_URL_DEFAULT} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD} ${MLSDISTCOMP_RSCRIPT_MAIN_PATH} > $bootstrapper_logfile 2>&1"
     echo < $bootstrapper_logfile
-    
+
     echo "Completed PublishMRSWebServices"
 }
 
@@ -185,7 +185,7 @@ ConfigureMLSWebNode()
     # Update Host name & AAD Settings
     MLS_WEBNODE_APPSETTINGS_TMP='/tmp/appsettings.json'
     echo "Updating MLS Web Node appsettings to ${MLS_WEBNODE_APPSETTINGS_TMP}..."
-    jq ".Kestrel.Host=\""${MLS_URL}"\"|.Authentication.AdminAccount.Enabled=false|.Authentication.AzureActiveDirectory.Enabled=true|.Authentication.AzureActiveDirectory.Authority=\""https://login.windows.net/${TENANT_NAME}"\"|.Authentication.AzureActiveDirectory.Audience=\""${MLS_APPID}"\"|.Authentication.AzureActiveDirectory.ClientId=\""${MLS_CLIENTID}"\"|.Authentication.AzureActiveDirectory.Key=\""${MLS_CLIENT_SECRET}"\"|.Authentication.AzureActiveDirectory.KeyEncrypted=false" ${MLS_WEBNODE_APPSETTINGS} > $MLS_WEBNODE_APPSETTINGS_TMP
+    jq ".Kestrel.Host=\""${MLS_DNS_NAME_OR_IP}"\"|.Authentication.AdminAccount.Enabled=false|.Authentication.AzureActiveDirectory.Enabled=true|.Authentication.AzureActiveDirectory.Authority=\""https://login.windows.net/${TENANT_NAME}"\"|.Authentication.AzureActiveDirectory.Audience=\""${MLS_APPID}"\"|.Authentication.AzureActiveDirectory.ClientId=\""${MLS_CLIENTID}"\"|.Authentication.AzureActiveDirectory.Key=\""${MLS_CLIENT_SECRET}"\"|.Authentication.AzureActiveDirectory.KeyEncrypted=false" ${MLS_WEBNODE_APPSETTINGS} > $MLS_WEBNODE_APPSETTINGS_TMP
 
     echo "Updating permissions on ${MLS_WEBNODE_APPSETTINGS} to allow writes..."
     sudo chmod u+w ${MLS_WEBNODE_APPSETTINGS}

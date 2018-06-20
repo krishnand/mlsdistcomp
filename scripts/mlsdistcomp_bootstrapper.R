@@ -37,7 +37,7 @@ mlsLogin <- function(url,
                     password) {
   require(mrsdeploy)
   print('Executing mrsdeploy::remoteLogin...')
-  mrsdeploy::remoteLogin(url=url,
+  mrsdeploy::remoteLogin(url,
                          username=username,
                          password=password,
                          session = FALSE)
@@ -62,7 +62,7 @@ register <- function(profile){
   # mlsdistcomp.R file. We compute this and pass it to
   # the functions below.
 
-  if(strcmpi(profile, "Central")){
+  if(profile == "Central" || profile == 'central'){
     print('Registering central services')
     register_central_webservices()
   } else {
@@ -877,18 +877,18 @@ if (length(args)<5) {
   url <- args[2]
   user <- args[3]
   pwd <- args[4]
-  mlsdistcomp_path <- args[5]
+  mlsdistcomppath <<- args[5]
   if(length(args)==6){
     fn <- args[6]
   } else{
     fn <- 'register'
   }
 
-  sprintf('Calling mlslogin with parameters %s %s %s', url, user, pwd)
+  print('Calling mlslogin..')
   mlsLogin(url=url, username=user, password=pwd)
 
-  print('Calling function...: ', fn)
-  do.call(fn, as.character(profile))
+  print('Calling function...')
+  do.call(fn, list(as.character(profile)))
 
   print('Completed bootstrap routine.')
 }
