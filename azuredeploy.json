@@ -169,7 +169,7 @@
     "imageOffer": "linux-data-science-vm-ubuntu",
     "imagePublisher": "microsoft-ads",
     "imageSku": "linuxdsvmubuntu",
-    "mlServerUrl": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')).IpAddress]",
+    "mlServerUrl": "[reference('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')).IpAddress]",
     "networkSecurityGroupName": "[concat(parameters('dnsLabelPrefix'), 'nsg')]",
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
     "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",    
