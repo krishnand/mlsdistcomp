@@ -14,39 +14,6 @@ library(distcomp)
 print('Loading mlsdistcomp...')
 library(mlsdistcomp)
 
-##############################
-#
-# ARGS
-#
-##############################
-print('Inspecting args...')
-args = commandArgs(trailingOnly=TRUE)
-if (length(args)<5) {
-
-  stop("Expected at least 5 arguments.", call.=FALSE)
-
-} else if (length(args)>=5) {
-
-  profile <- args[1]
-  url <- args[2]
-  user <- args[3]
-  pwd <- args[4]
-  mlsdistcomp_path <- args[5]
-
-  if(length(args)==6){
-    fn <- args[6]
-  } else{
-    fn <- 'register'
-  }
-
-  sprintf('Calling mlslogin with parameters %s %s %s', url, user, pwd)
-  mlsLogin(url=url, username=user, password=pwd)
-
-  print('Calling fn...: ', fn)
-  do.call(fn, as.character(profile))
-
-  print('Completed bootstrap routine.')
-}
 
 ##############################
 #
@@ -891,4 +858,37 @@ register_participant_webservices <- function(mlsdistcomppath){
     v = "v1"
   )
 
+}
+
+##############################
+#
+# MAIN
+#
+##############################
+print('Inspecting and printing args...')
+args = commandArgs(trailingOnly=TRUE)
+print(args)
+
+if (length(args)<5) {
+  stop("Expected at least 5 arguments.", call.=FALSE)
+} else if (length(args)>=5) {
+
+  profile <- args[1]
+  url <- args[2]
+  user <- args[3]
+  pwd <- args[4]
+  mlsdistcomp_path <- args[5]
+  if(length(args)==6){
+    fn <- args[6]
+  } else{
+    fn <- 'register'
+  }
+
+  sprintf('Calling mlslogin with parameters %s %s %s', url, user, pwd)
+  mlsLogin(url=url, username=user, password=pwd)
+
+  print('Calling function...: ', fn)
+  do.call(fn, as.character(profile))
+
+  print('Completed bootstrap routine.')
 }

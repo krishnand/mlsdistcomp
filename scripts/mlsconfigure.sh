@@ -20,6 +20,8 @@ MLS_ADMINUTIL_PATH="${MLS_ROOT}/o16n/Microsoft.MLServer.Utils.AdminUtil/Microsof
 MLS_WEBNODE_APPSETTINGS="${MLS_ROOT}/o16n/Microsoft.MLServer.WebNode/appsettings.json"
 MLS_URL_DEFAULT='http://localhost:12800'
 MLS_ADMIN_USER='admin'
+MLS_APP_FOLDER='/var/lib/mlsdistcomp'
+MLS_APP_SECRETS_FILENAME='mlsdbsecrets.csv'
 
 if [ ! -d "${MLS_ROOT}" ]; then
     echo "MLS Root directory was not found at - $MLS_ROOT. Exiting..."
@@ -38,13 +40,13 @@ echo $@
 # Configure the environment for: "Central" or "Participant"
 PROFILE=${1}
 # SQL Server DNS
-SQL_SERVER=${2} 
+SQL_SERVERNAME=${2} 
 # SQL Server - Database name
-SQL_DATABASE=${3}
+SQL_DBNAME=${3}
 # SQL Server admin username
 SQL_USER=${4}
 # SQL Server admin pwd
-SQL_PASSWORD=${5}
+SQL_USERPWD=${5}
 # MLSDistcomp package location.
 MLSDISTCOMP_LOC=${6}
 # Script where the MLSDistcomp bootstrapper script
@@ -98,22 +100,48 @@ InstallRPackages()
     # rlist package does not install with Imports in the mlsdistcomp. Explicitly adding it
     # lib='"${MLS_RLIB_PATH}" - Not needed. Lib path defaults to ML Server's lib path
     sudo su - -c "Rscript -e \"install.packages('rlist');install.packages('"${MLSDISTCOMP_PKG_PATH}"', repos=NULL, type='source')\""
-
+    
     echo "Completed InstallRPackages"
 }
 
+# Ok so we need to setup secrets that the mlsdistcomp package can read & use.
+# There are several approaches such as using secrets, keyring, env vars and so on.
+# Roadblock 1: The MLS web services are going to point to an R script (the mlsdistcomp.R)
+# and thus the secrets have ti be 'embedded' in it.
+# Roadblock 2: Several of the facilities that work with secrets are designed for interactive use
+# or restrict visibility. I tried out the keyring and it immediately ran into issues
+# with just setting the keys even.
+# In the interest of simplicity we simply are going to create an app folder that will
+# will hold the mlsdbsecrets.csv for mlsdistcomp. It is recommended a non-admin user (with read-only privileges)
+# be provisioned on the SQL and that be pointed to in here.
 UpdateMLSDistCompSecrets()
-{
-    echo "Executing UpdateMLSDistCompSecrets..."
+{    
+    echo "Executing UpdateMLSDistCompSecrets..."        
+    
+    sudo mkdir ${MLS_APP_FOLDER}
+    sudo chmod 777 ${MLS_APP_FOLDER}
+
+    echo "Checking and removing file '${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}'"
+    if [ -f "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}" ] ; then
+        sudo rm -f "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
+    fi
+
+    echo "Creating and adding content to file '${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}'"
+    echo "SQL_SERVERNAME,SQL_DBNAME,SQL_USER,SQL_USERPWD" >> "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
+    echo "${SQL_SERVERNAME},${SQL_DBNAME},${SQL_USER},${SQL_USERPWD}" >> "${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}"
+
+    echo "Completed UpdateMLSDistCompSecrets"
+    ###############################################################
+    # Keyring
+    #
 
     # We are going to use the keyring R package to store and access secrets.
-    echo "Install the keyring package..."
-    sudo su - -c "Rscript -e \"source('https://install-github.me/r-lib/keyring')\""
+    #echo "Install the keyring package..."
+    #sudo su - -c "Rscript -e \"source('https://install-github.me/r-lib/keyring')\""
 
-    echo "Setting secrets in the default keyring..."
-    sudo su - -c "Rscript -e \"library(keyring);key_set_with_value('SQL_SERVERNAME',password='"${SQL_SERVER}"');key_set_with_value('SQL_DBNAME',password='"${SQL_DATABASE}"');key_set_with_value('SQL_USER',password='"${SQL_USER}"');key_set_with_value('SQL_PASSWORD',password='"${SQL_PASSWORD}"')\""
-    
-    echo "Completed UpdateMLSDistCompSecrets"
+    #echo "Setting secrets in the default keyring..."
+    #sudo su - -c "Rscript -e \"library(keyring);key_set_with_value('SQL_SERVERNAME',password='"${SQL_SERVERNAME}"');key_set_with_value('SQL_DBNAME',password='"${SQL_DBNAME}"');key_set_with_value('SQL_USER',password='"${SQL_USER}"');key_set_with_value('SQL_USERPWD',password='"${SQL_PASSWORD}"')\""
+    ###############################################################    
 }
 
 PublishMRSWebServices()
@@ -138,11 +166,10 @@ PublishMRSWebServices()
     echo "Args passed: ${PROFILE} ${MLS_URL_DEFAULT} ${MLS_ADMIN_USER} ${MLS_ADMIN_PWD} ${MLSDISTCOMP_RSCRIPT_MAIN_PATH}"
 
     # Expected args: profile <- args[1], url <- args[2], username <- args[3], password <- args[4], mlsdistcomppath <- args[5] 
-    bootstrapper_logfile=$(mktemp)
-    sudo su - -c "Rscript --no-save --no-restore --verbose \"${MLS_BOOTSTRAPPER_SCRIPT_PATH}\" \"${PROFILE}"\ \"${MLS_URL}\" \"${MLS_ADMIN_USER}\" \"${MLS_ADMIN_PWD}\"" > $bootstrapper_logfile 2>&1"
-
+    bootstrapper_logfile=$(mktemp)    
+    sudo su - -c "Rscript --no-save --no-restore --verbose \"${MLS_BOOTSTRAPPER_SCRIPT_PATH}\" \'${PROFILE}\' \'${MLS_URL}\' \'${MLS_ADMIN_USER}\' \'${MLS_ADMIN_PWD}\' \'${MLSDISTCOMP_RSCRIPT_MAIN_PATH}\' > $bootstrapper_logfile 2>&1"
     echo < $bootstrapper_logfile
-
+    
     echo "Completed PublishMRSWebServices"
 }
 
@@ -174,6 +201,9 @@ ConfigureMLSWebNode()
     # Flush iptables
     echo "Flush iptables..."
     sudo iptables --flush
+
+    # Remove temp appsettings file
+    sudo rm -vf ${MLS_WEBNODE_APPSETTINGS_TMP}
 
     echo "Completed ConfigureMLSWebNode"
 }
