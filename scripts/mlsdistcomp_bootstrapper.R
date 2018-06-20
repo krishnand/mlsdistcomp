@@ -54,7 +54,7 @@ mlsLogin <- function(url,
 #'
 #' @examples
 #' register('Central')
-register <- function(profile){
+register <- function(profile,scriptpath){
 
   require(mrsdeploy)
 
@@ -62,12 +62,12 @@ register <- function(profile){
   # mlsdistcomp.R file. We compute this and pass it to
   # the functions below.
 
-  if(profile == "Central" || profile == 'central'){
+  if(profile == "Central" || profile == "central"){
     print('Registering central services')
-    register_central_webservices()
+    register_central_webservices(scriptpath)
   } else {
     print('Registering participant services')
-    register_participant_webservices()
+    register_participant_webservices(scriptpath)
   }
 }
 
@@ -83,7 +83,7 @@ register <- function(profile){
 unregister <- function(profile){
   require(mrsdeploy)
 
-  if(strcmpi(profile, "Central")) {
+  if(profile == "Central" || profile == "central") {
 
     print('Unregistering central services')
 
@@ -888,7 +888,7 @@ if (length(args)<5) {
   mlsLogin(url=url, username=user, password=pwd)
 
   print('Calling function...')
-  do.call(fn, list(as.character(profile)))
+  do.call(fn, list(as.character(profile),as.character(mlsdistcomppath)))
 
   print('Completed bootstrap routine.')
 }
