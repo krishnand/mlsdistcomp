@@ -389,7 +389,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', [concat(variables('vmName'), '.', [resourceGroup().location], '.cloudapp.azure.com'], '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
+              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', [concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com'], '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
             }
           }
         }
