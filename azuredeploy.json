@@ -169,7 +169,7 @@
     "imageOffer": "linux-data-science-vm-ubuntu",
     "imagePublisher": "microsoft-ads",
     "imageSku": "linuxdsvmubuntu",
-    "mlServerUrl": "[concat(variables('vmName'), '.', resourceGroup.location(), '.cloudapp.azure.com')]",
+    "mlServerUrl": "[concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com')]",
     "networkSecurityGroupName": "[concat(parameters('dnsLabelPrefix'), 'nsg')]",
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
     "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",    
