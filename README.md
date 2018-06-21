@@ -22,7 +22,7 @@ permissions to access the ML Server AAD application. The following steps describ
 * Browse to the **[Azure portal](https://ms.porta.azure.com)** and launch the Cloud Shell (_look for bash prompt icon on the portal toolbar_)
 * Execute this command to create the AAD Application for the ML Server: 
 ```bash
-az ad app create --display-name '<a unique name for your mlsdistcomp aad app for.e.g, contosomlsdistcompapp>'
+az ad app create --display-name mlsdistcompcentral --homepage "http://localhost:12800" --identifier-uris "http://contoso.onmicrosoft.com/mlsdistcompcentral" --reply-urls "http://localhost:12800"
 ```
 
 

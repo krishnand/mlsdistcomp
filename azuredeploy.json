@@ -54,7 +54,7 @@
         "description": "MLSDistcomp package location"
       },
       "defaultValue": "https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/mlsdistcomp_0.1.0.0000.tar.gz"
-    },
+    },        
     "sqlserverAdminLogin": {
       "type": "string",
       "minLength": 1,
@@ -162,6 +162,26 @@
       "metadata": {
         "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
       }
+    },
+    "_artifactsLocation": {
+      "type": "string"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring"
+    },
+    "WebDeployPackageFolder": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "WebDeploy package location. This path is relative to the _artifactsLocation parameter"
+      }
+    },
+    "WebDeployPackageFileName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the webdeploy package"
+      }
     }
   },
   "variables": {
@@ -172,6 +192,7 @@
     "networkSecurityGroupName": "[concat(parameters('dnsLabelPrefix'), 'nsg')]",
     "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
     "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",    
+    "pkgMLSWebApp": "[concat('https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/', toLower(parameters('deploymentProfile')), 'webapp.zip')]",
     "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcompmin.sql')]",    
     "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
     "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
@@ -186,7 +207,7 @@
     "virtualNetworkName": "[concat(parameters('dnsLabelPrefix'), 'vnet')]",
     "vmName": "[parameters('dnsLabelPrefix')]",
     "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",
-    "webAppUrl": "[concat('https://', variables('webAppName'), '.azurewebsites.net:12800')]",
+    //"webAppUrl": "[concat('https://', variables('webAppName'), '.azurewebsites.net')]",
     "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appplan', uniqueString(resourceGroup().id))]"
   },
   "resources": [
@@ -392,34 +413,7 @@
               "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
             }
           }
-        }
-        //{
-        //  "name": "WebAppDeploy",
-        //  "type": "extensions",
-        //  "location": "[resourceGroup().location]",
-        //  "apiVersion": "2016-03-30",
-        //  "dependsOn": [
-        //    "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
-        //    "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
-        //  ],
-        //  "tags": {
-        //    "displayName": "WebAppDeploy"
-        //  },
-        //  "properties": {
-        //    "publisher": "Microsoft.OSTCExtensions",
-        //    "type": "CustomScriptForLinux",
-        //    "typeHandlerVersion": "1.4",
-        //    "autoUpgradeMinorVersion": true,
-        //    "settings": {
-        //      "fileUris": [
-        //        "[variables('scriptUriWebAppDeploy')]"
-        //      ]
-        //    },
-        //    "protectedSettings": {
-        //      "commandToExecute": "[concat('bash webappdeploy.sh \"', parameters('adminPassword'), '\"')]"
-        //    }
-        //  }
-        //}
+        }        
       ]
     },
     {
@@ -503,7 +497,51 @@
       "properties": {
         "name": "[variables('webAppName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('webAppSvcPlanName'))]"
-      }
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+          ],
+          "tags": {
+            "displayName": "WebDeploy"
+          },
+          "properties": {
+            "packageUri": "[variables('pkgMLSWebApp')]",
+            "dbType": "None",
+            //"connectionString": "",
+            "setParameters": {
+              "IIS Web Application Name": "[variables('webAppName')]"
+            }
+          }
+        },
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('webAppName'))]",
+            "[concat('Microsoft.Web/sites/', variables('webAppName'), '/Extensions/MSDeploy')]
+          ],
+          "tags": {
+            "displayName": "AppSettings"
+          },
+          "properties": {
+            "AzureAd:Instance": "https://login.microsoftonline.com/",
+            "AzureAd:Domain": "[parameters('tenantName')]",
+            "AzureAd:TenantId": "[variables('tenantId')]",
+            "AzureAd:CallbackPath": "/signin-oidc",
+            "AzureAd:Client": "[parameters('aadAppMLSClient')]",
+            "AzureAd:ClientSecret": "[parameters('aadAppMLSClientSecret')]",
+            "AzureAd:MRSDistCompResourceAppId": "[parameters('aadAppMLS')]",
+            "AzureAd:MRSDistCompBaseAddress": "[concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800')]"
+          }
+        }
+      ]
     }
   ],
   "outputs": {
