@@ -162,27 +162,7 @@
       "metadata": {
         "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
       }
-    },
-    "_artifactsLocation": {
-      "type": "string"
-    },
-    "_artifactsLocationSasToken": {
-      "type": "securestring"
-    },
-    "WebDeployPackageFolder": {
-      "type": "string",
-      "minLength": 1,
-      "metadata": {
-        "description": "WebDeploy package location. This path is relative to the _artifactsLocation parameter"
-      }
-    },
-    "WebDeployPackageFileName": {
-      "type": "string",
-      "minLength": 1,
-      "metadata": {
-        "description": "Name of the webdeploy package"
-      }
-    }
+    }    
   },
   "variables": {
     "addressPrefix": "10.0.0.0/16",
