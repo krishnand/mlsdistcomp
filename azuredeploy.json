@@ -206,8 +206,7 @@
     "tenantId": "[subscription().tenantId]",
     "virtualNetworkName": "[concat(parameters('dnsLabelPrefix'), 'vnet')]",
     "vmName": "[parameters('dnsLabelPrefix')]",
-    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",
-    //"webAppUrl": "[concat('https://', variables('webAppName'), '.azurewebsites.net')]",
+    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",    
     "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appplan', uniqueString(resourceGroup().id))]"
   },
   "resources": [
@@ -513,7 +512,7 @@
           "properties": {
             "packageUri": "[variables('pkgMLSWebApp')]",
             "dbType": "None",
-            //"connectionString": "",
+            "connectionString": "",
             "setParameters": {
               "IIS Web Application Name": "[variables('webAppName')]"
             }
