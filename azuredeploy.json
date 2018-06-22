@@ -206,7 +206,7 @@
     "tenantId": "[subscription().tenantId]",
     "virtualNetworkName": "[concat(parameters('dnsLabelPrefix'), 'vnet')]",
     "vmName": "[parameters('dnsLabelPrefix')]",
-    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",    
+    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",
     "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appplan', uniqueString(resourceGroup().id))]"
   },
   "resources": [
@@ -524,7 +524,7 @@
           "apiVersion": "2015-08-01",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('webAppName'))]",
-            "[concat('Microsoft.Web/sites/', variables('webAppName'), '/Extensions/MSDeploy')]
+            "[concat('Microsoft.Web/sites/', variables('webAppName'), '/Extensions/MSDeploy')]"
           ],
           "tags": {
             "displayName": "AppSettings"
