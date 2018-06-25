@@ -491,11 +491,7 @@
           },
           "properties": {
             "packageUri": "[variables('pkgMLSWebApp')]",
-            "dbType": "None",
-            "connectionString": "",
-            "setParameters": {
-              "IIS Web Application Name": "[variables('webAppName')]"
-            }
+            "dbType": "None"            
           }
         },
         {
