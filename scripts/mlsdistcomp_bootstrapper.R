@@ -184,7 +184,9 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
-
+    require(distcomp)
+    require(mlsdistcomp)
+    
     participantObj <- Participant$new()
     participants = participantObj$getParticipants()
 
