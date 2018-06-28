@@ -129,6 +129,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     computationObj <- Computation$new()
     resultList <- computationObj$registerAllComputations()
@@ -155,6 +157,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     participantObj <- Participant$new()
     participants = participantObj$getParticipants()
@@ -184,8 +188,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
-    require(distcomp)
-    require(mlsdistcomp)
+    library(distcomp)
+    library(mlsdistcomp)
     
     participantObj <- Participant$new()
     participants = participantObj$getParticipants()
@@ -232,6 +236,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     dataCatalogObj <- DataCatalog$new()
     if(is.null(schemaname) || schemaname == ""){
@@ -266,6 +272,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     Result = NULL
     # Verify if schema exists for the computation
@@ -328,6 +336,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     computationInfoObj <- ComputationInfo$new()
     if(projectname != ""){
@@ -367,6 +377,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     # Verify if computation type exists
     computationObj <- Computation$new()
@@ -456,6 +468,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     # Verify project exists
     computationInfoObj <- ComputationInfo$new()
@@ -502,7 +516,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
-    require(distcomp)
+    library(distcomp)
+    library(mlsdistcomp)
 
     # Refresh all participant tokens. No ROI with optimizing this.
     print("Refreshing particpant access tokens...")
@@ -543,7 +558,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
-    require(distcomp)
+    library(distcomp)
+    library(mlsdistcomp)
 
     computationInfoJobObj <- ComputationInfoJob$new()
     Result <- computationInfoJobObj$getJobById(jobid)
@@ -576,7 +592,8 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(curl)
     require(RODBC)
     require(R6)
-    require(distcomp)
+    library(distcomp)
+    library(mlsdistcomp)
 
     computationInfoJobObj <- ComputationInfoJob$new()
     computationInfoJobs <- computationInfoJobObj$getJobsForProject(projectname)
@@ -607,6 +624,8 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     participantObj <- Participant$new()
     participants = participantObj$getParticipants()
@@ -654,7 +673,8 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(RODBC)
     require(R6)
     require(rlist)
-    require(distcomp)
+    library(distcomp)
+    library(mlsdistcomp)
 
     resultNumeric = NA
     resultList = list()
@@ -697,6 +717,8 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     # Verify if computation type exists
     computationObj <- Computation$new()
@@ -764,6 +786,8 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     # Verify if computation type exists
     computationObj <- Computation$new()
@@ -817,6 +841,8 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(curl)
     require(RODBC)
     require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
 
     #
     # Verify if schema of the data source exists
