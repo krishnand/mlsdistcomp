@@ -889,8 +889,13 @@ if (length(args)<5) {
   print('Calling mlslogin..')
   mlsLogin(url=url, username=user, password=pwd)
 
-  print('Calling function...')
-  do.call(fn, list(as.character(profile),as.character(mlsdistcomppath)))
-
+  if(fn == 'Register' || fn == 'register') {
+    do.call(fn, list(as.character(profile),as.character(mlsdistcomppath)))
+  } else if(fn == 'Unregister' || fn == 'unregister') {
+    do.call(fn, list(as.character(profile)))
+  } else {
+    sprintf("Function %s is unknown", fn)
+  }
+  
   print('Completed bootstrap routine.')
 }

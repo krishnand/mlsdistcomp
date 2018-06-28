@@ -168,7 +168,7 @@ UpdateMLSDistCompSecrets()
     # password = <as-is>
     ###############################################
 
-    SQL_SERVERNAME_FORMATTED="tcp:${SQL_SERVERNAME}.database.windows.net,1433"
+    SQL_SERVERNAME_FORMATTED="\"tcp:${SQL_SERVERNAME}.database.windows.net,1433\""
     SQL_USER_FORMATTED="${SQL_USER}@${SQL_SERVERNAME}"
 
     echo "Creating and adding content to file '${MLS_APP_FOLDER}/${MLS_APP_SECRETS_FILENAME}'"
