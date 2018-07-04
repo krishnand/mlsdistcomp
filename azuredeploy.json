@@ -2,19 +2,25 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "aadAppMLS": {
+    "aadAppLocalResource": {
       "type": "string",
       "metadata": {
-        "description": "Application ID of the Client AAD app."
+        "description": "Application ID of the Resource AAD application in your tenant. Same value as aadAppCentralResource when deployment is for Central Registry."
       }
     },
-    "aadAppMLSClient": {
+    "aadAppLocalClient": {
       "type": "string",
       "metadata": {
-        "description": "Application ID of the AAD app."
+        "description": "Application ID of the Client AAD application in your tenant."
       }
     },
-    "aadAppMLSClientSecret": {
+    "aadAppCentralResource": {
+      "type": "string",
+      "metadata": {
+        "description": "Application ID of Central Registry's Resource AAD application. MUST enter same value as aadAppLocalResource when deployment is for Central Registry."
+      }
+    },
+    "aadAppLocalClientSecret": {
       "type": "securestring",
       "metadata": {
         "description": "The Client secret created on the AAD Client Application."
@@ -23,16 +29,29 @@
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine."
+        "description": "Username for the Machine Learning (R) Server."
       },
       "defaultValue": "mlsAdmin"
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine and Operationalization. Must be 8-16 characters long and contain at least 1 uppercase character(s), 1+ lowercase character(s), 1+ number(s), and 1+ special character(s)"
+        "description": "Password for the Machine Learning (R) Server. Must be 8-16 characters long and contain at least 1 uppercase character(s), 1+ lowercase character(s), 1+ number(s), and 1+ special character(s)"
       },
       "defaultValue": "Welcome1234!"
+    },
+    "centralRegistryTenantId": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Tenant Id where Central Registry resources are hosted. Required when deployment profile is 'Participant'. Obtain from your IT Admin or the Distcomp Network Admin."
+      },
+      "defaultValue": "00000000-0000-0000-0000-000000000000"
+    },
+    "centralRegistryAPIEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "The Central Registry Web API endpoint. Enter DNS name of the Central Registry's VM that hosts your Microsoft Learning Server. Format expected: servername.regioname.cloudapp.azure.com"
+      }      
     },
     "deploymentProfile": {
       "type": "string",
@@ -54,7 +73,7 @@
         "description": "MLSDistcomp package location"
       },
       "defaultValue": "https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/mlsdistcomp_0.1.0.tar.gz"
-    },        
+    },
     "sqlserverAdminLogin": {
       "type": "string",
       "minLength": 1,
@@ -162,7 +181,7 @@
       "metadata": {
         "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
       }
-    }    
+    }
   },
   "variables": {
     "addressPrefix": "10.0.0.0/16",
@@ -389,7 +408,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppMLS'), '\" \"', parameters('aadAppMLSClient'), '\" \"', parameters('aadAppMLSClientSecret'), '\"')]"
+              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppLocalResource'), '\" \"', parameters('aadAppLocalClient'), '\" \"', parameters('aadAppLocalClientSecret'), '\"')]"
             }
           }
         }        
@@ -510,10 +529,13 @@
             "AzureAd__Domain": "[parameters('tenantName')]",
             "AzureAd__TenantId": "[variables('tenantId')]",
             "AzureAd__CallbackPath": "/signin-oidc",
-            "AzureAd__ClientId": "[parameters('aadAppMLSClient')]",
-            "AzureAd__ClientSecret": "[parameters('aadAppMLSClientSecret')]",
-            "AzureAd__MRSDistCompResourceAppId": "[parameters('aadAppMLS')]",
-            "AzureAd__MRSDistCompBaseAddress": "[concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800')]"
+            "AzureAd__ClientId": "[parameters('aadAppLocalClient')]",
+            "AzureAd__ClientSecret": "[parameters('aadAppLocalClientSecret')]",
+            "AzureAd__ResourceAppId": "[parameters('aadAppLocalResource')]",
+            "AzureAd__ResourceBaseAddress": "[concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800')]",
+            "AzureAd__CentralRegistryTenantId": "[parameters('centralRegistryTenantId')]",
+            "AzureAd__CentralRegistryResourceAppId": "[parameters('aadAppCentralResource')]",
+            "AzureAd__CentralRegistryBaseAddress": "[if(equals(parameters('deploymentProfile'),'Central'), concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800'), concat('http://', parameters('centralRegistryAPIEndpoint'), ':12800'))]"
           }
         }
       ]

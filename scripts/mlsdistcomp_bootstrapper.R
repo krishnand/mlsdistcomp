@@ -103,8 +103,10 @@ unregister <- function(profile){
 
     print('Unregistering participant services')
 
+    deleteService("RegisterComputations", "v1")
     deleteService("RegisterMaster", "v1")
     deleteService("AckSchemaRegistration", "v1")
+    deleteService("GetDataSources", "v1")
     deleteService("CreateCSVDataSource", "v1")
     deleteService("AckProposeComputation", "v1")
     deleteService("ProcessJob", "v1")
@@ -610,10 +612,49 @@ register_central_webservices <- function(mlsdistcomppath) {
     outputs = list(Result = "data.frame"),
     v = "v1"
   )
+  
+  # Invoke register computations to register all available
+  # computation types in the SQL backend
+  registerComputations
 }
 
 
 register_participant_webservices <- function(mlsdistcomppath){
+  
+  #' Function that registers computations from distcomp package
+  #' into the mlsdistcomp backend.
+  #'
+  #' @return
+  #' @export
+  #'
+  #' @examples
+  registerComputations <- function() {
+    require(stringr)
+    require(uuid)
+    require(lubridate)
+    require(httr)
+    require(jsonlite)
+    require(curl)
+    require(RODBC)
+    require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
+    
+    computationObj <- Computation$new()
+    resultList <- computationObj$registerAllComputations()
+    computationObj$finalize()
+    Result <- paste0("The following computations were registered: ", print(resultList, row.names = FALSE))
+    return(Result)
+  }
+  
+  api_registerComputations <- publishService(
+    "RegisterComputations",
+    code = registerComputations,
+    model = mlsdistcomppath,
+    inputs = list(),
+    outputs = list(Result = "character"),
+    v = "v1"
+  )
 
   registerMaster <- function(name, clientid, tenantid, url, clientsecret) {
     require(stringr)
@@ -886,6 +927,44 @@ register_participant_webservices <- function(mlsdistcomppath){
     v = "v1"
   )
 
+  #
+  # Web service to get all data sources
+  #
+  getDataSources <- function() {
+    require(stringr)
+    require(uuid)
+    require(lubridate)
+    require(httr)
+    require(jsonlite)
+    require(curl)
+    require(RODBC)
+    require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
+    
+    #
+    # Get all data sources
+    #
+    dataSourcesObj <- DataSources$new()
+    dataSources = dataSourcesObj$getDataSourcesByName()
+    Result = apply(dataSources, 1, list)
+    dataSourcesObj$finalize()
+    return(Result)
+  }
+  
+  api_getDataSources <- publishService(
+    "GetDataSources",
+    code = getDataSources,
+    model = mlsdistcomppath,
+    inputs = list(),
+    outputs = list(Result = "data.frame"),
+    v = "v1"
+  )
+  
+  # Register all computation types in the distcomp package with
+  # the SQL backend
+  registerComputations()
+  
 }
 
 ##############################
