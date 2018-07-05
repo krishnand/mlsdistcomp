@@ -202,7 +202,7 @@
     "scriptUriMLSBootstrapper": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcomp_bootstrapper.R')]",
     "sqlDatabaseName": "mlsdistcompdb",
     "sqlServerName": "[concat(parameters('dnsLabelPrefix'), 'sql', uniquestring(resourceGroup().id))]",
-    "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'storage')]",
+    "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'storage')]",      
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
@@ -529,17 +529,18 @@
             "displayName": "AppSettings"
           },
           "properties": {
-            "AzureAd__Instance": "https://login.microsoftonline.com/",
-            "AzureAd__Domain": "[parameters('tenantName')]",
-            "AzureAd__TenantId": "[variables('tenantId')]",
             "AzureAd__CallbackPath": "/signin-oidc",
-            "AzureAd__ClientId": "[parameters('aadAppLocalClient')]",
-            "AzureAd__ClientSecret": "[parameters('aadAppLocalClientSecret')]",
-            "AzureAd__ResourceAppId": "[parameters('aadAppLocalResource')]",
-            "AzureAd__ResourceBaseAddress": "[concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800')]",
             "AzureAd__CentralRegistryTenantId": "[parameters('centralRegistryTenantId')]",
             "AzureAd__CentralRegistryResourceAppId": "[parameters('aadAppCentralResource')]",
-            "AzureAd__CentralRegistryBaseAddress": "[if(equals(parameters('deploymentProfile'),'Central'), concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800'), concat('http://', parameters('centralRegistryAPIEndpoint'), ':12800'))]"
+            "AzureAd__CentralRegistryBaseAddress": "[if(equals(parameters('deploymentProfile'),'Central'), concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800'), concat('http://', parameters('centralRegistryAPIEndpoint'), ':12800'))]",
+            "AzureAd__ClientId": "[parameters('aadAppLocalClient')]",
+            "AzureAd__ClientSecret": "[parameters('aadAppLocalClientSecret')]",
+            "AzureAd__Domain": "[parameters('tenantName')]",
+            "AzureAd__Instance": "https://login.microsoftonline.com/",
+            "AzureAd__ResourceAppId": "[parameters('aadAppLocalResource')]",
+            "AzureAd__ResourceBaseAddress": "[concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800')]",
+            "AzureAd__StorageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+            "AzureAd__TenantId": "[variables('tenantId')]"
           }
         }
       ]

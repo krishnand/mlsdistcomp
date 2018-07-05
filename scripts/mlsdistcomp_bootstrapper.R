@@ -15,11 +15,11 @@ print('Loading mlsdistcomp...')
 library(mlsdistcomp)
 
 
-##############################
+#################################################
 #
 # FUNCTIONS
 #
-##############################
+#################################################
 
 #' Create a login session for Machine Learning Server
 #' A valid MLS session is required for this function to succeeed.
@@ -1035,11 +1035,12 @@ register_participant_webservices <- function(mlsdistcomppath){
 
 }
 
-##############################
+#################################################
 #
 # MAIN
 #
-##############################
+#################################################
+
 print('Inspecting and printing args...')
 args = commandArgs(trailingOnly=TRUE)
 print(args)
