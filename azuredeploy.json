@@ -5,7 +5,7 @@
     "aadAppLocalResource": {
       "type": "string",
       "metadata": {
-        "description": "Application ID of the Resource AAD application in your tenant. Same value as aadAppCentralResource when deployment is for Central Registry."
+        "description": "Application ID of the Resource AAD application in your tenant. Same value as 'Aad App Central Resource' when deployment is for Central Registry."
       }
     },
     "aadAppLocalClient": {
@@ -17,13 +17,13 @@
     "aadAppCentralResource": {
       "type": "string",
       "metadata": {
-        "description": "Application ID of Central Registry's Resource AAD application. MUST enter same value as aadAppLocalResource when deployment is for Central Registry."
+        "description": "Application ID of Central Registry's Resource AAD application. MUST enter same value as 'Aad App Local Resource' when deployment is for Central Registry."
       }
     },
     "aadAppLocalClientSecret": {
       "type": "securestring",
       "metadata": {
-        "description": "The Client secret created on the AAD Client Application."
+        "description": "The Client secret key created on the local Client AAD application."
       }
     },
     "adminUsername": {
@@ -43,18 +43,22 @@
     "centralRegistryTenantId": {
       "type": "string",
       "metadata": {
-        "description": "Azure Tenant Id where Central Registry resources are hosted. Required when deployment profile is 'Participant'. Obtain from your IT Admin or the Distcomp Network Admin."
+        "description": "Azure Tenant Id where Central Registry resources are hosted. Required when 'Deployment Profile' is 'Participant'. Obtain from your IT Admin or the Distcomp Network Admin."
       },
       "defaultValue": "00000000-0000-0000-0000-000000000000"
     },
     "centralRegistryAPIEndpoint": {
       "type": "string",
       "metadata": {
-        "description": "The Central Registry Web API endpoint. Enter DNS name of the Central Registry's VM that hosts your Microsoft Learning Server. Format expected: servername.regioname.cloudapp.azure.com"
-      }      
+        "description": "The Central Registry Web API endpoint. Required when 'Deployment Profile' is 'Participant'. Enter the DNS name of the Central Registry's VM that hosts your Microsoft Learning Server. Format expected: servername.regioname.cloudapp.azure.com"
+      },
+      "defaultValue": "contosomls.eastus2.cloudapp.azure.com"
     },
     "deploymentProfile": {
       "type": "string",
+      "metadata": {
+        "description": "The profile of this deployment. 'Central' deploys the Central Registry resources. 'Participant' deploys a regular participant site resources."
+      },
       "defaultValue": "Participant",
       "allowedValues": [
         "Central",
@@ -64,13 +68,13 @@
     "dnsLabelPrefix": {
       "type": "string",
       "metadata": {
-        "description": "Name of the VM to be provisioned in the resource group. Also the prefix for related resources."
+        "description": "Prefix used for all Azure resources in the deployment including the Machine Learning Server VM."
       }
     },    
     "pkgMLSDistcomp": {
       "type": "string",
       "metadata": {
-        "description": "MLSDistcomp package location"
+        "description": "Location of the 'mlsdistcomp' R package. Do not change unless needed."
       },
       "defaultValue": "https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/mlsdistcomp_0.1.0.tar.gz"
     },
@@ -116,7 +120,7 @@
     "tenantName": {
       "type": "string",
       "metadata": {
-        "description": "Azure tenant domain. For e.g., contoso.onmicrosoft.com"
+        "description": "Azure tenant domain name where the current deployment is being provisioned. Expected format: contoso.onmicrosoft.com"
       }
     },
     "vmSku": {
@@ -198,15 +202,15 @@
     "scriptUriMLSBootstrapper": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcomp_bootstrapper.R')]",
     "sqlDatabaseName": "mlsdistcompdb",
     "sqlServerName": "[concat(parameters('dnsLabelPrefix'), 'sql', uniquestring(resourceGroup().id))]",
-    "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'sa', uniquestring(resourceGroup().id))]",
+    "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'storage')]",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "tenantId": "[subscription().tenantId]",
     "virtualNetworkName": "[concat(parameters('dnsLabelPrefix'), 'vnet')]",
     "vmName": "[parameters('dnsLabelPrefix')]",
-    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp', uniqueString(resourceGroup().id))]",
-    "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appplan', uniqueString(resourceGroup().id))]"
+    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp')]",
+    "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appsvcplan')]"
   },
   "resources": [
     {

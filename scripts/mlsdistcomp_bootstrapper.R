@@ -95,6 +95,7 @@ unregister <- function(profile){
     deleteService("GetComputationProjects", "v1")
     deleteService("ProposeComputation", "v1")
     deleteService("EnrollInProject", "v1")
+    deleteService("GetProjectParticipants", "v1")
     deleteService("TriggerJob", "v1")
     deleteService("GetJobInfo", "v1")
     deleteService("GetProjectJobs", "v1")
@@ -505,6 +506,44 @@ register_central_webservices <- function(mlsdistcomppath) {
                   participantname = "character"),
     v = "v1"
   )
+  
+  #
+  # ComputationInfoParticipant::GetProjectParticipants
+  #
+  getProjectParticipants <- function(projectname) {
+    require(stringr)
+    require(uuid)
+    require(lubridate)
+    require(httr)
+    require(jsonlite)
+    require(curl)
+    require(RODBC)
+    require(R6)
+    library(distcomp)
+    library(mlsdistcomp)
+    
+    computationInfoParticipantsObj <- ComputationInfoParticipants$new()
+    if(is.null(projectname) || projectname == ""){
+      projectParticipants = computationInfoParticipantsObj$getAllComputationInfoParticipants()
+    }
+    else {
+      projectParticipants = ComputationInfoParticipantsObj$getParticipantsOfAProject(projectname)
+    }
+    
+    Result = apply(projectParticipants, 1, list)
+    computationInfoParticipantsObj$finalize()
+    return(Result)
+  }
+  
+  api_getProjectParticipants <- publishService(
+    "GetProjectParticipants",
+    code = getProjectParticipants,
+    model = mlsdistcomppath,
+    inputs = list(projectname = "character"),
+    outputs = list(Result = "data.frame"),
+    v = "v1"
+  )
+  
 
   #
   # ComputationInfoJob::TriggerJob

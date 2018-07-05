@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS [dbo].[ComputationInfo]
 DROP TABLE IF EXISTS [dbo].[DataSources]
 DROP TABLE IF EXISTS [dbo].[DataCatalog]
 DROP TABLE IF EXISTS [dbo].[Participants]
-DROP TABLE IF EXISTS [dbo].[AvailableComputation]
+DROP TABLE IF EXISTS [dbo].[Computation]
 GO
 
 /*
@@ -86,11 +86,11 @@ GO
 
 
 /*
-****** CREATE Table [dbo].[AvailableComputation] ******
+****** CREATE Table [dbo].[Computation] ******
 */
 
 
-CREATE TABLE [dbo].[AvailableComputation](
+CREATE TABLE [dbo].[Computation](
 	[Id] [uniqueidentifier] NOT NULL,
 	[Name] [varchar](50) NOT NULL,
 	[Description] [varchar](1024) NULL,		
@@ -134,7 +134,7 @@ ALTER TABLE [dbo].[ComputationInfo] CHECK CONSTRAINT [FK_ComputationInfo_DataCat
 GO
 
 ALTER TABLE [dbo].[ComputationInfo]  WITH CHECK ADD CONSTRAINT [FK_ComputationInfo_ComputationType] FOREIGN KEY([ComputationType])
-REFERENCES [dbo].[AvailableComputation] ([Name])
+REFERENCES [dbo].[Computation] ([Name])
 GO
 
 ALTER TABLE [dbo].[ComputationInfo] CHECK CONSTRAINT [FK_ComputationInfo_ComputationType]
