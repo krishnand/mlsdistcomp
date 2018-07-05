@@ -16,7 +16,7 @@ Follow the instructions in **[this](./README_AAD.md)** document to provision the
 ## Configure Azure Resources for your site
 
 
-To operationalize the network (One-Box Configuration) (Linux Ubuntu Data Science VM) simply click the Deploy option below.
+To operationalize your site with the Linux Ubuntu Data Science VM, simply click the Deploy option below.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png" />
@@ -24,8 +24,3 @@ To operationalize the network (One-Box Configuration) (Linux Ubuntu Data Science
 <a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
-
-
-## Configure Azure Web Application for your site
-
-TBD..
