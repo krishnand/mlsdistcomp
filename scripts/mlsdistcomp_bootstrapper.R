@@ -1,6 +1,6 @@
 #!/usr/bin/env RScript
 
-# These packages to have be installed 
+# These packages to have be installed
 # for the bootstrapper to work
 
 print('Starting bootstrap routine...')
@@ -193,7 +193,7 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(R6)
     library(distcomp)
     library(mlsdistcomp)
-    
+
     participantObj <- Participant$new()
     participants = participantObj$getParticipants()
 
@@ -296,7 +296,7 @@ register_central_webservices <- function(mlsdistcomppath) {
     if(as.logical(broadcast)) {
 
       # Refresh all participant tokens. No ROI with optimizing this.
-      print("Refreshing particpant access tokens...")
+      print("Refreshing participant access tokens...")
       participantsObj = Participant$new()
       participantsObj$refreshAADToken()
       participantsObj$finalize()
@@ -363,8 +363,7 @@ register_central_webservices <- function(mlsdistcomppath) {
   )
 
   #
-  # Service to propose a new computation project (ComputationInfo) and broadcast it
-  # to all participants.
+  # ComputationInfo: Propose new project and broadcast to all participants.
   #
   proposeComputation <- function(projectname,
                                  projectdesc,
@@ -421,7 +420,7 @@ register_central_webservices <- function(mlsdistcomppath) {
     if(as.logical(broadcast)) {
 
       # Refresh all participant tokens. No ROI with optimizing this.
-      print("Refreshing particpant access tokens...")
+      print("Refreshing participant access tokens...")
       participantsObj = Participant$new()
       participantsObj$refreshAADToken()
       participantsObj$finalize()
@@ -462,7 +461,8 @@ register_central_webservices <- function(mlsdistcomppath) {
   # Service to enroll a participant in a project
   #
   enrollInProject <- function(projectname,
-                              participantname) {
+                              participantname,
+                              operation) {
     require(stringr)
     require(uuid)
     require(lubridate)
@@ -482,20 +482,44 @@ register_central_webservices <- function(mlsdistcomppath) {
     }
     computationInfoObj$finalize()
 
-    #
-    # Enroll participant in project
-    #
-
+    # Enroll or unenroll participant in project
     projectParticipantsObj <- ComputationInfoParticipants$new()
     projectParticipantsDataFrame = projectParticipantsObj$getParticipantsOfAProject(projectname)
     if(is.null(projectParticipantsDataFrame) || nrow(projectParticipantsDataFrame) == 0){
 
-      projectParticipantsObj$create(projectname, participantname)
-      sprintf("Particpant '%s' successfully enrolled in project '%s'.", participantname, projectname)
+      if(operation == "Enroll" || operation == "enroll") {
+        sprintf("Project '%s' has no participants. Adding '%s'...", projectname, participantname)
+        projectParticipantsObj$create(projectname, participantname)
+        sprintf("Participant '%s' successfully enrolled in project '%s'.", participantname, projectname)
+      }
 
     } else {
-      sprintf("Particpant '%s' is already enrolled in project '%s'.", participantname, projectname)
+
+      sprintf("Project '%s' has participants. Check if participant '%s' is already enrolled...", projectname, participantname)
+      participantProjectDataFrame = projectParticipantsDataFrame[projectParticipantsDataFrame$participantname==participantname, ]
+      if(!is.null(participantProjectDataFrame) && nrow(participantProjectDataFrame) == 1) {
+
+        if(operation == "Enroll" || operation == "enroll") {
+          sprintf("Participant '%s' is already enrolled in project '%s'.", participantname, projectname)
+        } else {
+          sprintf("Unenrolling participant '%s' from project '%s'.", participantname, projectname)
+          projectParticipantsObj$deleteProjectParticipant(projectname, participantname)
+        }
+
+      } else {
+
+        if(operation == "Enroll" || operation == "enroll") {
+          projectParticipantsObj$create(projectname, participantname)
+          sprintf("Participant '%s' successfully enrolled in project '%s'.", participantname, projectname)
+        } else {
+
+          sprintf("Unenrolling all participants from project '%s'.", projectname)
+          projectParticipantsObj$deleteProjectParticipant(projectname, NULL)
+
+        }
+      }
     }
+    projectParticipantsObj$finalize()
   }
 
   api_enrollInProject <- publishService(
@@ -503,10 +527,11 @@ register_central_webservices <- function(mlsdistcomppath) {
     code = enrollInProject,
     model = mlsdistcomppath,
     inputs = list(projectname = "character",
-                  participantname = "character"),
+                  participantname = "character",
+                  operation = "character"),
     v = "v1"
   )
-  
+
   #
   # ComputationInfoParticipant::GetProjectParticipants
   #
@@ -521,7 +546,7 @@ register_central_webservices <- function(mlsdistcomppath) {
     require(R6)
     library(distcomp)
     library(mlsdistcomp)
-    
+
     computationInfoParticipantsObj <- ComputationInfoParticipants$new()
     if(is.null(projectname) || projectname == ""){
       projectParticipants = computationInfoParticipantsObj$getAllComputationInfoParticipants()
@@ -529,12 +554,12 @@ register_central_webservices <- function(mlsdistcomppath) {
     else {
       projectParticipants = ComputationInfoParticipantsObj$getParticipantsOfAProject(projectname)
     }
-    
+
     Result = apply(projectParticipants, 1, list)
     computationInfoParticipantsObj$finalize()
     return(Result)
   }
-  
+
   api_getProjectParticipants <- publishService(
     "GetProjectParticipants",
     code = getProjectParticipants,
@@ -543,7 +568,7 @@ register_central_webservices <- function(mlsdistcomppath) {
     outputs = list(Result = "data.frame"),
     v = "v1"
   )
-  
+
 
   #
   # ComputationInfoJob::TriggerJob
@@ -561,7 +586,7 @@ register_central_webservices <- function(mlsdistcomppath) {
     library(mlsdistcomp)
 
     # Refresh all participant tokens. No ROI with optimizing this.
-    print("Refreshing particpant access tokens...")
+    print("Refreshing participant access tokens...")
     participantsObj = Participant$new()
     participantsObj$refreshAADToken()
     participantsObj$finalize()
@@ -637,7 +662,12 @@ register_central_webservices <- function(mlsdistcomppath) {
     library(mlsdistcomp)
 
     computationInfoJobObj <- ComputationInfoJob$new()
-    computationInfoJobs <- computationInfoJobObj$getJobsForProject(projectname)
+    if(is.null(projectname) || projectname == ""){
+      computationInfoJobs <- computationInfoJobObj$getJobsForProject(NULL)
+    }
+    else {
+      computationInfoJobs <- computationInfoJobObj$getJobsForProject(projectname)
+    }
     Result = apply(computationInfoJobs, 1, list)
     computationInfoJobObj$finalize()
     return(Result)
@@ -651,15 +681,14 @@ register_central_webservices <- function(mlsdistcomppath) {
     outputs = list(Result = "data.frame"),
     v = "v1"
   )
-  
+
   # Invoke register computations to register all available
   # computation types in the SQL backend
-  registerComputations
+  registerComputations()
 }
 
-
 register_participant_webservices <- function(mlsdistcomppath){
-  
+
   #' Function that registers computations from distcomp package
   #' into the mlsdistcomp backend.
   #'
@@ -678,14 +707,14 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(R6)
     library(distcomp)
     library(mlsdistcomp)
-    
+
     computationObj <- Computation$new()
     resultList <- computationObj$registerAllComputations()
     computationObj$finalize()
     Result <- paste0("The following computations were registered: ", print(resultList, row.names = FALSE))
     return(Result)
   }
-  
+
   api_registerComputations <- publishService(
     "RegisterComputations",
     code = registerComputations,
@@ -980,7 +1009,7 @@ register_participant_webservices <- function(mlsdistcomppath){
     require(R6)
     library(distcomp)
     library(mlsdistcomp)
-    
+
     #
     # Get all data sources
     #
@@ -990,7 +1019,7 @@ register_participant_webservices <- function(mlsdistcomppath){
     dataSourcesObj$finalize()
     return(Result)
   }
-  
+
   api_getDataSources <- publishService(
     "GetDataSources",
     code = getDataSources,
@@ -999,11 +1028,11 @@ register_participant_webservices <- function(mlsdistcomppath){
     outputs = list(Result = "data.frame"),
     v = "v1"
   )
-  
+
   # Register all computation types in the distcomp package with
   # the SQL backend
   registerComputations()
-  
+
 }
 
 ##############################
@@ -1040,6 +1069,6 @@ if (length(args)<5) {
   } else {
     sprintf("Function %s is unknown", fn)
   }
-  
+
   print('Completed bootstrap routine.')
 }
