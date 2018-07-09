@@ -7,7 +7,6 @@ possible from the entire dataset.
     The original **[distcomp](https://cran.r-project.org/web/packages/distcomp/index.html)** work in R, discusses all of the scenarios and the underlying research work.
 This document below describes how one can setup this network in a very easy manner on Azure.
 
-
 ## Configure Azure Active Directory applications
 
 **[Azure Active Directory](https://azure.microsoft.com/en-us/services/active-directory/)** is an Azure service that is used to secure identities, applications on cloud and in hybrid environments. To operationalize `mlsdistcomp` at a site, 2 Azure Active Directory applications are required. 
@@ -24,3 +23,10 @@ simply click the Deploy option below.
 <a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
+
+You can monitor the progress of your deployment on the Azure portal. Notifications about the deployment will inform whether the deployment
+was successful or not. You can click on the notification and go to the resource group to view and inspect all resources.
+
+**NOTE: The web application is the resource of type `App Service` in your resource group. Click to view this resource and copy the
+`URL` property value; this is the `MLSDistComp` web application endpoint for your site.
+ 
