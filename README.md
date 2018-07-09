@@ -10,7 +10,7 @@ This document below describes how one can setup this network in a very easy mann
 ## Configure Azure Active Directory applications
 
 **[Azure Active Directory](https://azure.microsoft.com/en-us/services/active-directory/)** is an Azure service that is used to secure identities, applications on cloud and in hybrid environments. To operationalize `mlsdistcomp` at a site, 2 Azure Active Directory applications are required. 
-Follow the instructions in **[this document](../docs/README_AAD.md)** to provision the AAD applications required.
+Follow the instructions in **[this document](docs/README_AAD.md)** to provision the AAD applications required.
 This is a pre-requisite to start your deployment.
 
 ## Configure Azure Resources
