@@ -8,15 +8,15 @@ possible from the entire dataset.
 This document below describes how one can setup this network in a very easy manner on Azure.
 
 
-## Configure Azure Active Directory Application for your site
+## Configure Azure Active Directory applications
 
 **[Azure Active Directory](https://azure.microsoft.com/en-us/services/active-directory/)** is an Azure service that is used to secure identities, applications on cloud and in hybrid environments. To operationalize `mlsdistcomp` at a site, 2 Azure Active Directory applications are required. 
-Follow the instructions in **[this](./README_AAD.md)** document to provision the AAD applications required.
+Follow the instructions in **[this document](../docs/README_AAD.md)** to provision the AAD applications required.
 
-## Configure Azure Resources for your site
+## Configure Azure Resources
 
-
-To operationalize your site with the Linux Ubuntu Data Science VM, simply click the Deploy option below.
+To operationalize your site with the Linux Ubuntu Data Science VM, 
+simply click the Deploy option below.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png" />

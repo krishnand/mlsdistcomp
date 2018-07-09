@@ -1029,6 +1029,34 @@ register_participant_webservices <- function(mlsdistcomppath){
     v = "v1"
   )
 
+  #
+  # Web service to download data source
+  # file locally to the R server
+  #
+  downloadDataSourceFile <- function(downloaduri, localfilename) {
+    require(stringr)
+    require(httr)
+    require(curl)
+
+    # TODO..TODO.. Hardcoded. Pick from the mlsdistcomp package
+    mainDir <- '/var/lib/mlsdistcomp'
+    subDir <- 'data'
+    ifelse(!dir.exists(file.path(mainDir, subDir)), dir.create(file.path(mainDir, subDir)), FALSE)
+    localfilepath <- file.path(mainDir, subDir, localfilename)
+    download.file(downloaduri, destfile = localfilepath, method="curl")
+    Result <- sprintf("File downloaded successfully to '%s'", localfilepath)
+    return(Result)
+  }
+
+  api_downloadDataSourceFile <- publishService(
+    "DownloadDataSourceFile",
+    code = downloadDataSourceFile,
+    inputs = list(downloaduri = "character",
+                  localfilename = "character"),
+    outputs = list(Result = "character"),
+    v = "v1"
+  )
+
   # Register all computation types in the distcomp package with
   # the SQL backend
   registerComputations()
