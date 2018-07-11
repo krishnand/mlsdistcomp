@@ -47,3 +47,17 @@ az ad app create --display-name "<<APP_NAME>>client" --homepage "https://<<AZURE
 
 ```
 
+### Generating Client Secret Key
+
+You must create a `Client Secret` a key that will used in the token generation process to authenticate that the requester of the token is valid.
+All AAD applications other than the Central Registry's Resource AAD application will need to have a Client Secret key generated.
+
+To do so:
+* Browse to the Azure Portal
+* In the left-hand navigation pane, click the `Azure Active Directory` service, click `App registrations`, then find/click the application you want to configure.
+* In the application's main registration page, Click the `Keys` section on the `Settings` page.
+* Add a description for your key.
+* Select either a one or two year duration or Never expires option
+* Click Save. **NOTE**: The right-most column will contain the key value, after you save the configuration changes. 
+Be sure to copy the key for use in your client application code, as it is not accessible once you leave this page.
+
