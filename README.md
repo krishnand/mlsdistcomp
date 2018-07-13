@@ -43,9 +43,20 @@ Follow the instructions in **[this document](docs/README_AAD.md)** to provision 
 
 To start the installation, click the `Deploy to Azure` option below. Follow the instructions on the template deployment screen it brings you to in the Azure Portal to start your deployment.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png" />
+* To provision the `Central Registry` in a network click
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploycentral.json" target="_blank">
+    <img src="https://github.com/krishnand/mlsdistcomp/blob/master/images/deploycentral.svg" />
 </a>
+>>>>>>> 9f2e7ebfba3e94596230b58d179baee15e32e464
+
+* Or click to provision participant sites: `Deploy Participant to Azure`  
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeployparticipant.json" target="_blank">
+    <img src="https://github.com/krishnand/mlsdistcomp/blob/master/images/deployparticipant.svg" />
+</a>
+
+On the template screen:
 
 1. Check the subscription that is defaulted is the one you want to use. 
 
