@@ -48,7 +48,6 @@ To start the installation, click the `Deploy to Azure` option below. Follow the 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploycentral.json" target="_blank">
     <img src="https://github.com/krishnand/mlsdistcomp/blob/master/images/deploycentral.svg" />
 </a>
->>>>>>> 9f2e7ebfba3e94596230b58d179baee15e32e464
 
 * Or click to provision participant sites: `Deploy Participant to Azure`  
 
