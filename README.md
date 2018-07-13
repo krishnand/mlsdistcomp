@@ -43,8 +43,15 @@ This is a necessary step before you run the scripts on this site.
 To start the installation, click the `Deploy to Azure` option below.
 Follow the instructions on the template deployment screen it brings you to in the Azure Portal to start your deployment.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png" />
+#### Central Registry
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploycentral.json" target="_blank">
+    <img src="https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/images/deploycentral.svg" />
+</a>
+
+#### Participants
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeployparticipant.json" target="_blank">
+    <img src="https://github.com/krishnand/mlsdistcomp/blob/master/images/deployparticipant.svg" />
 </a>
 
 
