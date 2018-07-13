@@ -5,7 +5,7 @@
     "aadAppLocalResource": {
       "type": "string",
       "metadata": {
-        "description": "Application ID of the Resource AAD application in your tenant. Same value as 'Aad App Central Resource' when deployment is for Central Registry."
+        "description": "Application ID of the Resource AAD application in your tenant."
       }
     },
     "aadAppLocalClient": {
@@ -14,69 +14,42 @@
         "description": "Application ID of the Client AAD application in your tenant."
       }
     },
-    "aadAppCentralResource": {
-      "type": "string",
-      "metadata": {
-        "description": "Application ID of Central Registry's Resource AAD application. MUST enter same value as 'Aad App Local Resource' when deployment is for Central Registry."
-      }
-    },
     "aadAppLocalClientSecret": {
       "type": "securestring",
       "metadata": {
         "description": "The Client secret key created on the local Client AAD application."
       }
     },
-    "adminUsername": {
+    "aadAppCentralResource": {
+      "type": "string",
+      "metadata": {
+        "description": "Application ID of Central Registry's Resource AAD application. MUST enter same value as 'Aad App Local Resource' when deployment is for Central Registry."
+      }
+    },
+    "sshUser": {
       "type": "string",
       "metadata": {
         "description": "Username for the Machine Learning (R) Server."
       },
       "defaultValue": "mlsAdmin"
     },
-    "adminPassword": {
+    "sshUserPassword": {
       "type": "securestring",
       "metadata": {
         "description": "Password for the Machine Learning (R) Server. Must be 8-16 characters long and contain at least 1 uppercase character(s), 1+ lowercase character(s), 1+ number(s), and 1+ special character(s)"
-      },
-      "defaultValue": "Welcome1234!"
+      }
     },
     "centralRegistryTenantId": {
       "type": "string",
       "metadata": {
-        "description": "Azure Tenant Id where Central Registry resources are hosted. Required when 'Deployment Profile' is 'Participant'. Obtain from your IT Admin or the Distcomp Network Admin."
-      },
-      "defaultValue": "00000000-0000-0000-0000-000000000000"
+        "description": "Azure Tenant Id where Central Registry resources are hosted. Obtain from your IT Admin or the Distcomp Network Admin."
+      }
     },
     "centralRegistryAPIEndpoint": {
       "type": "string",
       "metadata": {
-        "description": "The Central Registry Web API endpoint. Required when 'Deployment Profile' is 'Participant'. Enter the DNS name of the Central Registry's VM that hosts your Microsoft Learning Server. Format expected: servername.regioname.cloudapp.azure.com"
-      },
-      "defaultValue": "contosomls.eastus2.cloudapp.azure.com"
-    },
-    "deploymentProfile": {
-      "type": "string",
-      "metadata": {
-        "description": "The profile of this deployment. 'Central' deploys the Central Registry resources. 'Participant' deploys a regular participant site resources."
-      },
-      "defaultValue": "Participant",
-      "allowedValues": [
-        "Central",
-        "Participant"
-      ]
-    },
-    "dnsLabelPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "Prefix used for all Azure resources in the deployment including the Machine Learning Server VM."
+        "description": "The Central Registry Web API endpoint. Required when 'Deployment Profile' is 'Participant'. Format expected: servername.regioname.cloudapp.azure.com"
       }
-    },    
-    "pkgMLSDistcomp": {
-      "type": "string",
-      "metadata": {
-        "description": "Location of the 'mlsdistcomp' R package. Do not change unless needed."
-      },
-      "defaultValue": "https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/mlsdistcomp_0.1.0.tar.gz"
     },
     "sqlserverAdminLogin": {
       "type": "string",
@@ -84,133 +57,47 @@
       "defaultValue": "sqlAdmin"
     },
     "sqlserverAdminPassword": {
-      "type": "securestring",
-      "defaultValue": "Welcome1234!"
-    },
-    "sqlDatabaseNameCollation": {
-      "type": "string",
-      "minLength": 1,
-      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
-    },
-    "sqlDatabaseNameEdition": {
-      "type": "string",
-      "defaultValue": "Basic",
-      "allowedValues": [
-        "Basic",
-        "Standard",
-        "Premium"
-      ]
-    },
-    "sqlDatabaseNameRequestedServiceObjectiveName": {
-      "type": "string",
-      "defaultValue": "Basic",
-      "allowedValues": [
-        "Basic",
-        "S0",
-        "S1",
-        "S2",
-        "P1",
-        "P2",
-        "P3"
-      ],
-      "metadata": {
-        "description": "Describes the performance level for Edition"
-      }
+      "type": "securestring"
     },
     "tenantName": {
       "type": "string",
       "metadata": {
         "description": "Azure tenant domain name where the current deployment is being provisioned. Expected format: contoso.onmicrosoft.com"
       }
-    },
-    "vmSku": {
-      "type": "string",
-      "defaultValue": "Standard_D3_v2",
-      "allowedValues": [
-        "Standard_D2_v2",
-        "Standard_D3_v2",
-        "Standard_D4_v2",
-        "Standard_D5_v2",
-        "Standard_D11_v2",
-        "Standard_D12_v2",
-        "Standard_D13_v2",
-        "Standard_D14_v2",
-        "Standard_D15_v2",
-        "Standard_D2",
-        "Standard_D3",
-        "Standard_D4",
-        "Standard_D11",
-        "Standard_D12",
-        "Standard_D13",
-        "Standard_D14",
-        "Standard_DS1",
-        "Standard_DS2",
-        "Standard_DS3",
-        "Standard_DS4",
-        "Standard_DS11",
-        "Standard_DS12",
-        "Standard_DS13",
-        "Standard_DS14",
-        "Standard_DS2_v2",
-        "Standard_DS3_v2",
-        "Standard_DS4_v2",
-        "Standard_DS5_v2",
-        "Standard_DS11_v2",
-        "Standard_DS12_v2",
-        "Standard_DS13_v2",
-        "Standard_DS14_v2",
-        "Standard_DS15_v2"
-      ],
-      "metadata": {
-        "description": "Size of VM"
-      }
-    },
-    "webAppSvcSkuName": {
-      "type": "string",
-      "defaultValue": "F1",
-      "allowedValues": [
-        "F1",
-        "D1",
-        "B1",
-        "B2",
-        "B3",
-        "S1",
-        "S2",
-        "S3",
-        "P1",
-        "P2",
-        "P3",
-        "P4"
-      ],
-      "metadata": {
-        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
-      }
     }
   },
   "variables": {
     "addressPrefix": "10.0.0.0/16",
+    "deploymentProfile": "Participant",
+    "dnsLabelPrefix": "[resourceGroup().name]",
     "imageOffer": "linux-data-science-vm-ubuntu",
     "imagePublisher": "microsoft-ads",
-    "imageSku": "linuxdsvmubuntu",    
-    "networkSecurityGroupName": "[concat(parameters('dnsLabelPrefix'), 'nsg')]",
-    "nicName": "[concat(parameters('dnsLabelPrefix'), 'nic')]",
-    "publicIPAddressName": "[concat(parameters('dnsLabelPrefix'), 'publicip')]",    
-    "pkgMLSWebApp": "[concat('https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/', toLower(parameters('deploymentProfile')), 'webapp.zip')]",
-    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcompmin.sql')]",    
-    "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
-    "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
+    "imageSku": "linuxdsvmubuntu",
+    "networkSecurityGroupName": "[concat(variables('dnsLabelPrefix'), 'nsg')]",
+    "nicName": "[concat(variables('dnsLabelPrefix'), 'nic')]",
+    "pkgMLSDistcomp": "https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/mlsdistcomp_0.1.0.tar.gz",
+    "pkgMLSWebApp": "[concat('https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/packages/', toLower(variables('deploymentProfile')), 'webapp.zip')]",
+    "publicIPAddressName": "[concat(variables('dnsLabelPrefix'), 'publicip')]",
     "scriptUriMLSBootstrapper": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcomp_bootstrapper.R')]",
+    "scriptUriMLSConfigure": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsconfigure.sh')]",
+    "scriptUriSql": "[uri(deployment().properties.templateLink.uri, 'scripts/mlsdistcompmin.sql')]",
+    "scriptUriWebAppDeploy": "[uri(deployment().properties.templateLink.uri, 'scripts/webappdeploy.sh')]",
     "sqlDatabaseName": "mlsdistcompdb",
-    "sqlServerName": "[concat(parameters('dnsLabelPrefix'), 'sql', uniquestring(resourceGroup().id))]",
-    "storageAccountName": "[concat(parameters('dnsLabelPrefix'), 'storage')]",      
+    "sqlDatabaseNameCollation": "SQL_Latin1_General_CP1_CI_AS",
+    "sqlDatabaseNameEdition": "Basic",
+    "sqlDatabaseNameRequestedServiceObjectiveName": "Basic",
+    "sqlServerName": "[concat(variables('dnsLabelPrefix'), 'sql', uniquestring(resourceGroup().id))]",
+    "storageAccountName": "[concat(variables('dnsLabelPrefix'), 'storage')]",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "tenantId": "[subscription().tenantId]",
-    "virtualNetworkName": "[concat(parameters('dnsLabelPrefix'), 'vnet')]",
-    "vmName": "[parameters('dnsLabelPrefix')]",
-    "webAppName": "[concat(parameters('dnsLabelPrefix'), 'webapp')]",
-    "webAppSvcPlanName": "[concat(parameters('dnsLabelPrefix'), 'appsvcplan')]"
+    "virtualNetworkName": "[concat(variables('dnsLabelPrefix'), 'vnet')]",
+    "vmName": "[variables('dnsLabelPrefix')]",
+    "vmSku": "Standard_D3_v2",
+    "webAppName": "[concat(variables('dnsLabelPrefix'), 'webapp')]",
+    "webAppSvcPlanName": "[concat(variables('dnsLabelPrefix'), 'appsvcplan')]",
+    "webAppSvcSkuName": "F1"
   },
   "resources": [
     {
@@ -233,7 +120,7 @@
         "publicIPAllocationMethod": "Dynamic",
         "idleTimeoutInMinutes": 30,
         "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+          "domainNameLabel": "[variables('dnsLabelPrefix')]"
         }
       }
     },
@@ -344,12 +231,12 @@
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('vmSku')]"
+          "vmSize": "[variables('vmSku')]"
         },
         "osProfile": {
           "computerName": "[variables('vmName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
+          "adminUsername": "[parameters('sshUser')]",
+          "adminPassword": "[parameters('sshUserPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -412,7 +299,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash mlsconfigure.sh \"', parameters('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', parameters('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com'), '\" \"', parameters('adminPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppLocalResource'), '\" \"', parameters('aadAppLocalClient'), '\" \"', parameters('aadAppLocalClientSecret'), '\"')]"
+              "commandToExecute": "[concat('bash mlsconfigure.sh \"', variables('deploymentProfile'), '\" \"', variables('sqlServerName'), '\" \"', variables('sqlDatabaseName'), '\" \"',parameters('sqlserverAdminLogin'), '\" \"', parameters('sqlserverAdminPassword'), '\" \"', variables('scriptUriSql'), '\" \"', variables('pkgMLSDistcomp'), '\" \"', variables('scriptUriMLSBootstrapper'), '\" \"', concat(variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com'), '\" \"', parameters('sshUserPassword'), '\" \"', parameters('tenantName'), '\" \"', parameters('aadAppLocalResource'), '\" \"', parameters('aadAppLocalClient'), '\" \"', parameters('aadAppLocalClientSecret'), '\"')]"
             }
           }
         }        
@@ -457,10 +344,10 @@
             "displayName": "MLSDistCompDatabase"
           },
           "properties": {
-            "collation": "[parameters('sqlDatabaseNameCollation')]",
-            "edition": "[parameters('sqlDatabaseNameEdition')]",
+            "collation": "[variables('sqlDatabaseNameCollation')]",
+            "edition": "[variables('sqlDatabaseNameEdition')]",
             "maxSizeBytes": "1073741824",
-            "requestedServiceObjectiveName": "[parameters('sqlDatabaseNameRequestedServiceObjectiveName')]"
+            "requestedServiceObjectiveName": "[variables('sqlDatabaseNameRequestedServiceObjectiveName')]"
           },
           "resources": [            
           ]
@@ -473,7 +360,7 @@
       "location": "[resourceGroup().location]",
       "apiVersion": "2015-08-01",
       "sku": {
-        "name": "[parameters('webAppSvcSkuName')]"
+        "name": "[variables('webAppSvcSkuName')]"
       },
       "dependsOn": [],
       "tags": {
@@ -532,7 +419,7 @@
             "AzureAd__CallbackPath": "/signin-oidc",
             "AzureAd__CentralRegistryTenantId": "[parameters('centralRegistryTenantId')]",
             "AzureAd__CentralRegistryResourceAppId": "[parameters('aadAppCentralResource')]",
-            "AzureAd__CentralRegistryBaseAddress": "[if(equals(parameters('deploymentProfile'),'Central'), concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800'), concat('http://', parameters('centralRegistryAPIEndpoint'), ':12800'))]",
+            "AzureAd__CentralRegistryBaseAddress": "[concat('http://', parameters('centralRegistryAPIEndpoint'), ':12800')]",
             "AzureAd__ClientId": "[parameters('aadAppLocalClient')]",
             "AzureAd__ClientSecret": "[parameters('aadAppLocalClientSecret')]",
             "AzureAd__Domain": "[parameters('tenantName')]",
