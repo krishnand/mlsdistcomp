@@ -40,20 +40,22 @@ This is a necessary step before you run the scripts on this site.
 
 ### 2. Create the Solution's Azure Resources
 
-To start the installation, click the `Deploy to Azure` option below.
-Follow the instructions on the template deployment screen it brings you to in the Azure Portal to start your deployment.
-
-#### Central Registry
+To start the installation, 
+* Click the `Deploy Central to Azure` option below to provision a `Central Registry` in a network
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeploycentral.json" target="_blank">
-    <img src="https://raw.githubusercontent.com/krishnand/mlsdistcomp/master/images/deploycentral.svg" />
+    <img src="https://github.com/krishnand/mlsdistcomp/blob/master/images/deploycentral.svg" />
 </a>
 
-#### Participants
+OR
+
+* Click `Deploy Participant to Azure` to provision a Participant site in the network. 
+
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrishnand%2Fmlsdistcomp%2Fmaster%2Fazuredeployparticipant.json" target="_blank">
     <img src="https://github.com/krishnand/mlsdistcomp/blob/master/images/deployparticipant.svg" />
 </a>
 
+Follow the instructions on the template deployment screen it brings you to in the Azure Portal to start your deployment.
 
 **NOTE**: You can monitor the progress of your deployment on the Azure portal. Notifications about the deployment will inform you if the deployment
 was successful or not. Once deployment completes, click on the notification message and go to the resource group to view and inspect all 
