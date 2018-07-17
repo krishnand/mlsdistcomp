@@ -400,7 +400,7 @@
           },
           "properties": {
             "AzureAd__CallbackPath": "/signin-oidc",
-            "AzureAd__CentralRegistryResourceAppId": "[parameters('aadAppCentralResource')]",
+            "AzureAd__CentralRegistryResourceAppId": "[parameters('aadAppLocalResource')]",
             "AzureAd__CentralRegistryBaseAddress": "[concat('http://', variables('vmName'), '.', resourceGroup().location, '.cloudapp.azure.com:12800')]",
             "AzureAd__ClientId": "[parameters('aadAppLocalClient')]",
             "AzureAd__ClientSecret": "[parameters('aadAppLocalClientSecret')]",
