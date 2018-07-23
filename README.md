@@ -59,13 +59,13 @@ On the template screen:
 
 1. Check the subscription that is defaulted is the one you want to use. 
 
-2. If creating a central site, enter the same App ID you generated above for both "AAD App local resource" and "AAD app central resource."  If you are setting up a remote site,you will need the AAD central app ID for the "AAD app central resource."
+2. If creating a central site, enter the same App ID you generated above for both "AAD App local resource" and "AAD app central resource."  If you are setting up a remote site, you will need the AAD central app ID for the "AAD app central resource."
 
 3. For either central or remote sites, the client app ID and secret are the one you generated for that site.  The secret is the client app secret. 
 
 4. There's a default password given for the (mls Admin) system account on the linux VM where the mls server runs. You should change this.  Similarly set a secure SQL password. 
 
-5. Central Registry Tenant ID & API Endpoint.   Only needed for participant sites. 
+5. Central Registry Tenant ID & API Endpoint. This is only needed for participant sites. 
 
 6. Set your tenant name that you used for the AAS config. 
 

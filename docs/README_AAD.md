@@ -11,7 +11,7 @@ Replace those placeholders indicated <<LIKE_THIS>> with appropriate values as di
 
 * <<AZURE_RESOURCE_GROUP_NAME>> - Name of an Azure resource group where all your Azure resources will be provisioned. For e.g., contosomlsdistmaster. Creating a new group makes it easy to treat all constituent resources as one item.  
 * <<APP_NAME>> - Name of the AAD application. This could be the same as the resource group name. 
-* <<TENANT_NAME>> - This is the Azure tenant domain. The easiest way to find this is from the url when logged in to the Azure portal. The uri fragment that appears after - 'https://ms.portal.azure.com/#@' is your Azure domain or tenant name.
+* <<TENANT_NAME>> - This is the URI that identifies your Azure tenant domain. The easiest way to find this is from the URL when logged in to the Azure portal. The URL fragment that appears after - 'https://ms.portal.azure.com/#@' is your Azure domain or tenant name.
 * <<NEW_GUID>> - Generate a new unique guid, for example using 
 
     `python -c 'import uuid; print(str(uuid.uuid1()))'`
@@ -22,7 +22,7 @@ Replace those placeholders indicated <<LIKE_THIS>> with appropriate values as di
 
 ### Resource application corresponds to the the "MMLServer" web-server VM
 
-This AAD application is used to secure the Web APIs that will be hosted on the Microsoft Machine Learning Server on your site. In oAuth\AAD parlance this is the `Resource` or `Audience` application.
+This AAD application is used to secure the `R` Web APIs that will be hosted on the Microsoft Machine Learning Server on your site. In oAuth\AAD parlance this is the `Resource` or `Audience` application.
 
 ```bash
 
