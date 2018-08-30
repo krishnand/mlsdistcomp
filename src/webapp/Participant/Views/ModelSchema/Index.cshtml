@@ -1,0 +1,75 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.ModelSchema>
+
+@{
+    ViewBag.Title = "Model Schema";
+}
+
+<h3>Model Schema</h3>
+Data schema for Computation projects defined in the network.
+<br />
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Description</th>        
+        <th>Schema JSON</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.Name</td>
+            <td>@i.Description</td>            
+            <td>@i.SchemaJSON</td>
+        </tr>
+    }
+</table>
+
+
+@if (ViewBag.ErrorMessage == null)
+{
+<form name="input" action="ModelSchema" method="post">
+    <fieldset>
+        <legend>Add schema to data catalog</legend>
+        Enter the following details to add schema to the data catalog. This schema will need to be referenced
+        when creating computation projects.
+        <div>
+            <br />
+            <label>
+                Name
+            </label>
+            <br />
+            <input id="name" name="name" type="text" title="Name" required autofocus>
+        </div>
+        <div>
+            <br />
+            <label>
+                Description
+            </label>
+            <br />
+            <input id="description" name="description" type="text" title="Description for the schema" autofocus>
+        </div>        
+        <div>
+            <br />
+            <label>
+                Schema JSON
+            </label>
+            <br />
+            <input id="schemajson" name="schemajson" type="text" title="Data Schema in JSON format for e.g., schema=[{""futime"":59,""fustat"":1,""age"":72.3315,""resid.ds"":2,""rx"":1,""ecog.ps"":1}]" required autofocus>
+        </div>        
+        <div>
+            <br />
+            <button type=submit>Register Schema</button>
+        </div>
+    </fieldset>
+</form>
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see data catalog on site. Click @Html.ActionLink("here", "Index", "ModelSchema", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the data catalog on site.  Please try again.  You may need to sign-in.</p>
+}

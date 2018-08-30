@@ -1,0 +1,76 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.ComputationInfoJob>
+
+@{
+    ViewBag.Title = "Computation jobs";
+}
+
+<h3>Computation jobs</h3>
+Jobs created for computation projects. Each job contains detail about the
+status, result, summary, start and end datetime of the job and other details.
+<br />
+
+<table class="table table-bordered table-striped pre-scrollable">
+    <tr>
+        <th>Job Id</th>
+        <th>Project</th>
+        <th>Status</th>
+        <th>Result</th>
+        <th>Summary</th>
+        <th>Start Datetime</th>
+        <th>End Datetime</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.Id</td>
+            <td>@i.ComputationInfo</td>
+            <td>@i.Status</td>
+            <td>@i.Result</td>
+            <td>@i.Summary</td>
+            <td>@i.StartDateTime</td>
+            <td>@i.EndDateTime</td>
+        </tr>
+    }
+</table>
+
+
+@if (ViewBag.ErrorMessage == null)
+{
+    <form action="ComputationInfoJob" method="post" id="triggerjob">
+        <fieldset>
+            <legend>Trigger computation job</legend>
+            This will start a new computation job for the defined project. Computation requests are sent to all enrolled
+            participants in the project.
+            <div>
+                <br />
+                <label>
+                    Job Id
+                </label>
+                <br />
+                <input type="text" name="jobid" id="jobid" title="New guid string" autofocus required/>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Computation project
+                </label>
+                <br />
+                <input type="text" name="projectname" id="projectname" title="Name of a valid existing Computation project" autofocus required/>
+            </div>
+            <div>
+                <br />
+                <button type=submit>Start</button>
+            </div>
+        </fieldset>
+    </form>
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see all computation jobs on site. Click @Html.ActionLink("here", "Index", "ComputationInfoJob", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the computation jobs on site.  Please try again.  You may need to sign-in.</p>
+}

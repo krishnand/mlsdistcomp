@@ -1,0 +1,11 @@
+Package: mlsdistcomp
+Title: Extends distcomp package for Azure Machine Learning Server.
+Version: 0.1.0
+Authors@R: person(given = "Krishnan", family = "Duraisamy", role = c("aut", "cre"), email = "krishnad@microsoft.com")
+Description: This package extends the capabilities of `distcomp` package by enabling it for deployment in Azure and along with the Microsoft Learning Server. It also extends the distcomp with a compact data model and enables the network to work with a durable backend such as the Microsoft Sql Azure.
+Depends: R (>= 3.4.1)
+Imports: stringr, uuid, lubridate, httr, jsonlite, curl, RODBC, R6, rlist, distcomp
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1

@@ -1,0 +1,99 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.Participant>
+
+@{
+    ViewBag.Title = "Participants";
+}
+
+<h3>Participants</h3>
+Participants who are registered in this network.
+<br />
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Azure Client Id</th>
+        <th>Azure Tenant</th>
+        <th>Azure Web API Uri</th>
+        <th>Enabled</th>
+        <th>Valid From</th>
+        <th>Valid To</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.Name</td>
+            <td>@i.ClientId</td>
+            <td>@i.TenantId</td>
+            <td>@i.URL</td>
+            <td>@i.IsEnabled</td>
+            <td>@i.ValidFrom</td>
+            <td>@i.ValidTo</td>
+        </tr>
+    }
+</table>
+
+
+@if (ViewBag.ErrorMessage == null)
+{
+<form name="input" action="Participant" method="post">
+    <fieldset>
+        <legend>Add a new participant</legend>
+        Enter the following details to register a new participant in the network after the participant 
+        is setup and all provisioning operations are complete.
+        <div>
+            <br />
+            <label>
+                Name
+            </label>
+            <br />
+            <input id="name" name="name" type="text" title="Name for the participant" required autofocus>
+        </div>
+        <div>
+            <br />
+            <label>
+                Client Id
+            </label>
+            <br />
+            <input id="clientid" name="clientid" type="text" title="Participant site's Resource AAD application id(guid)" required autofocus>
+        </div>
+        <div>
+            <br />
+            <label>
+                Client Secret
+            </label>
+            <br />
+            <input id="clientsecret" name="clientsecret" type="text" title="Client secret key created on Participant site's Resource AAD application" required>
+        </div>
+        <div>
+            <br />
+            <label>
+                Azure Tenant
+            </label>
+            <br />
+            <input id="tenantid" name="tenantid" type="text" title="Azure tenant id (guid) where Participant resources are deployed" required>
+        </div>
+        <div>
+            <br />
+            <label>
+                URL
+            </label>
+            <br />
+            <input id="url" name="url" type="url" title="The ML Server endpoint where webservices are deployed. NOTE: Requires the port and the api suffix. For e.g., http://mydistcompmrswebapi.westus2.azure.com:12800/api">
+        </div>
+        <div>
+            <br />
+            <button type=submit>Register</button>
+        </div>
+    </fieldset>
+</form>
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see all participants on site. Click @Html.ActionLink("here", "Index", "Participant", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the participants on site.  Please try again.  You may need to sign-in.</p>
+}

@@ -1,0 +1,93 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.Participant>
+
+@{
+    ViewBag.Title = "Participants";
+}
+
+<h3>Participants</h3>
+List of all participants registered in this network.
+<br />
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Enabled</th>
+        <th>Valid From</th>
+        <th>Valid To</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.Name</td>
+            <td>@i.IsEnabled</td>
+            <td>@i.ValidFrom</td>
+            <td>@i.ValidTo</td>
+        </tr>
+    }
+</table>
+
+
+@if (ViewBag.ErrorMessage == null)
+{
+<form name="input" action="Participant" method="post">
+    <fieldset>
+        <legend>Register Central registry</legend>
+        The Central Registry information is required to be persisted on your local site. All relevant information must be obtained from the Central Registry administrator.
+        NOTE: Re-registering will overwrite existing information and can be used if the Central Registry information has changed, or if any updates are required in the current entry.
+        <div>
+            <br />
+            <label>
+                Name
+            </label>
+            <br />
+            <input id="name" name="name" type="text" title="Name for the Central Registry. Any valid alphanumeric string." required autofocus>
+        </div>
+        <div>
+            <br />
+            <label>
+                Client Id
+            </label>
+            <br />
+            <input id="clientid" name="clientid" type="text" placeholder="Application ID (guid) of the Central Registry's Resource AAD application'" required autofocus>
+        </div>
+        <div>
+            <br />
+            <label>
+                Client Secret
+            </label>
+            <br />
+            <input id="clientsecret" name="clientsecret" type="text" placeholder="Secret key created on the Central Registry's Resource AAD application" required>
+        </div>
+        <div>
+            <br />
+            <label>
+                Azure Tenant
+            </label>
+            <br />
+            <input id="tenantid" name="tenantid" type="text" placeholder="Azure Tenant Id (guid) where Central Registry is hosted." required>
+        </div>
+        <div>
+            <br />
+            <label>
+                URL
+            </label>
+            <br />
+            <input id="url" name="url" type="url" placeholder="http://mydistcompmrswebapi.westus2.azure.com:12800/api">
+        </div>
+        <div>
+            <br />
+            <button type=submit>Register</button>
+        </div>
+    </fieldset>
+</form>
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see all participants on site. Click @Html.ActionLink("here", "Index", "Participant", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the participants on site.  Please try again.  You may need to sign-in.</p>
+}

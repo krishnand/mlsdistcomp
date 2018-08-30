@@ -1,0 +1,101 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.ComputationInfo>
+
+@{
+    ViewBag.Title = "Computation projects";
+}
+
+<h3>Computation projects</h3>
+List of existing computation projects in the Central Registry.
+<br />
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Formula</th>
+        <th>Is Enabled</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.ProjectName</td>
+            <td>@i.ProjectDesc</td>
+            <td>@i.ComputationType</td>
+            <td>@i.Formula</td>
+            <td>@i.IsEnabled</td>
+        </tr>
+    }
+</table>
+
+@if (ViewBag.ErrorMessage == null)
+{
+    <form action="ComputationInfo" method="post" id="proposeproject">
+        <fieldset>
+            <legend>Propose a computation</legend>
+            To create a new computation project, specify - computation type, the formula to be used, and a schema that matches the formula. Validate the schema
+            against the formula before adding the computation to the computation projects. 
+            <div>
+                <br />
+                <label>
+                    Name
+                </label>
+                <br />
+                <input type="text" name="projectname" id="projectname" title="Name for the computation project" />
+            </div>
+            <div>
+                <br />
+                <label>
+                    Description
+                </label>
+                <br />
+                <textarea name="projectdesc" id="projectdesc" title="Description for the computation project"></textarea>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Computation Type
+                </label>
+                <br />
+                <select name="computationtype" , id="computationtype">
+                    <option value="StratifiedCoxModel" selected>Stratified Cox</option>
+                    <option value="RankKSVD">Rank-K SVD</option>
+                </select>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Formula
+                </label>
+                <br />
+                <input type="text" name="formula" id="formula" title="R language style formula" />
+            </div>
+            <div>
+                <br />
+                <label>
+                    Data Schema
+                </label>
+                <br />
+                <input type="text" name="schemaname" id="schemaname" title="Name of a valid schema in the data catalog" />                
+            </div>
+            <div>
+                <br />
+                <button name="submitbutton" value="Register" type=submit title="Register computation types in distcomp package as reference data">Register types</button>
+                &nbsp;&nbsp;&nbsp;
+                <button name="submitbutton" value="Validate" type=submit title="Validates the formula against the schema defined.">Validate</button>
+                &nbsp;&nbsp;&nbsp;
+                <button name="submitbutton" value="Propose" type=submit title="Register the computation project and broadcast to all participants in the system">Propose</button>
+            </div>                        
+        </fieldset>
+    </form>
+           
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see all computation projects on site. Click @Html.ActionLink("here", "Index", "ComputationInfo", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the computation projects on site.  Please try again.  You may need to sign-in.</p>
+}

@@ -1,0 +1,98 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.DataSource>
+
+@{
+    ViewBag.Title = "Data Sources";
+}
+
+<h3>Data Sources</h3>
+Data sources for data schemas defined in the network. Data sources are only
+required for schemas that are bound to computation projects that the participant
+intends to enroll in.
+<br />
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Model schema</th>
+        <th>Access info</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.Name</td>
+            <td>@i.Description</td>
+            <td>@i.Type</td>
+            <td>@i.ModelSchema</td>
+            <td>@i.AccessInfo</td>
+        </tr>
+    }
+</table>
+
+
+@if (ViewBag.ErrorMessage == null)
+{    
+    <form name="input" action="DataSource" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend>Define Data Source</legend>
+            Enter the following details to create a new data source. The data source is used when
+            computation job requests for a project come in from the central registry. Project enrollment
+            must be performed once you define a data source for the project.
+            <div>
+                <br />
+                <label>
+                    Name
+                </label>
+                <br />
+                <input id="name" name="name" type="text" required autofocus>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Description
+                </label>
+                <br />
+                <input id="description" name="description" type="text" autofocus>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Type
+                </label>
+                <br />
+                <input id="type" name="type" type="text" required autofocus>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Model schema
+                </label>
+                <br />
+                <input id="modelschema" name="modelschema" type="text" required autofocus>
+            </div>           
+            <div>
+                <br />
+                <label>
+                    Data file to upload
+                </label>
+                <br />
+                <input id="datafile" name="datafile" type="file" required autofocus>
+            </div>
+            <div>
+                <br />
+                <button type=submit>Create Data Source</button>
+            </div>
+        </fieldset>
+    </form>
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see data catalog on site. Click @Html.ActionLink("here", "Index", "ModelSchema", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the data catalog on site.  Please try again.  You may need to sign-in.</p>
+}

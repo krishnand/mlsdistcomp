@@ -1,0 +1,175 @@
+/* Form Styles 
+ * JMA 22 April 2018
+ * Borrowed from trevor-davis.com
+ */
+
+html, body, div, h1, h2, h3, h4, h5, h6, ul, ol, dl, li, dt, dd, p, blockquote, pre, form, th, td {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 80.0%;
+    width: 900px;
+}
+
+div#container {
+	background: #ededed;
+	font-size: 1.2em;
+	margin: 0 auto;
+	padding: 10px;
+	width: 900px;
+}
+
+div#computation {
+	background: #ededed;
+	font-size: 1.2em;
+	margin: 0 auto;
+	padding: 40px;
+	width: 820px;
+}
+
+div#run {
+	width: 100%;
+	background: #ededed;
+	font-size: 1.2em;
+	margin: 0 auto;
+	padding: 40px;
+	width: 820px;
+} 
+
+.container2 {
+    position: relative;
+    width: 820px;
+    height: 500px;
+}
+
+.triggerdiv {
+	width: 100%;
+	background: #ededed;
+	font-size: 1.2em;
+	margin: 0 auto;
+	padding: 40px;
+	width: 820px;
+} 
+
+.currentdiv {
+	width: 100%;
+	background: #ededed;
+	font-size: 1.8em;
+	margin: 0 auto;
+	padding: 40px;
+	width: 820px;
+} 
+
+.participantdiv {
+	width: 100%;
+	background: #ededed;
+	font-size: 1.2em;
+	margin: 0 auto;
+	padding: 40px;
+	width: 820px;
+} 
+
+h1 { 
+	font-size: 1.8em; 
+	margin-bottom: 0.167em;
+}
+
+p { margin-bottom: 1.5em; }
+
+.clearing { clear: both; }
+.alert, .error { color: #1d1b8d; margin-bottom: 2em}
+
+ol.forms {
+	float: left;
+	list-style: none;
+	width: 100%;
+}
+
+ol.forms li {
+	clear: left;
+	float: left;
+	line-height: 1.5em;
+	margin-bottom: 0.5em;
+	width: 100%;
+}
+
+ol.forms label {
+	cursor: pointer;
+	display: block;
+	float: left;
+	line-height: 1.5em;
+	padding-right: 1%;
+	text-align: right;
+	width: 20%;
+}
+
+ol.forms input { width: 59%; }
+ol.forms textarea {
+	height: 10em; 
+	width: 64%; 
+}
+
+ol.forms input, ol.forms textarea, ol.forms button { 
+	font: 1em Georgia, "Times New Roman", Times, serif; 
+}
+
+ol.forms .error { 
+	display: block;
+	margin: 0.25em 0 0 11%;
+}
+
+ol.forms li.buttons {
+	padding-left: 2%;
+	width: 89%;
+	font-size: 1.2em
+}
+
+.compInfo {
+	border-collapse:collapse;border-spacing:0;border-color:#999;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 110.0%;
+	width: 700px;
+}
+.compInfo td{
+    padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#444;background-color:#F7FDFA;
+}
+.compInfo th{
+    font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#fff;background-color:#26ADE4;
+}
+.compInfo .tg-b44r{
+    background-color:#dcddf5;vertical-align:top
+}
+.compInfo .tg-a5pb{
+    font-weight:bold;background-color:#26ade4;text-align:center;vertical-align:top
+}
+.compInfo .tg-yw4l{
+    vertical-align:top
+}
+
+.participantlist  {
+	border-collapse:collapse;border-spacing:0;border-color:#999;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 110.0%;
+	width: 800px;
+}
+.participantlist td{
+	padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#444;background-color:#F7FDFA;
+}
+.participantlist th{
+	font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#fff;background-color:#26ADE4;
+}
+.participantlist .tg-us36{
+	border-color:inherit;vertical-align:top
+}
+.participantlist .tg-eh2d{
+	background-color:#ffffff;border-color:inherit;vertical-align:top
+}
+.participantlist .tg-4q8m{
+	font-weight:bold;background-color:#26ade4;border-color:inherit;text-align:center;vertical-align:top
+}
+.participantlist .tg-qkv2{
+	background-color:#cbcefb;border-color:inherit;vertical-align:top
+}

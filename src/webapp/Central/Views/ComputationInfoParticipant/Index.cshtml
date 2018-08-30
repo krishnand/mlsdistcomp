@@ -1,0 +1,70 @@
+﻿@model IEnumerable<MRSDistCompWebApp.Models.ComputationInfoParticipant>
+
+@{
+    ViewBag.Title = "Project participants";
+}
+
+<h3>Project participants</h3>
+A list of participants that are enrolled in each of the available projects.
+<br />
+
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Id</th>
+        <th>Project</th>
+        <th>Participant</th>
+        <th>Is enabled</th>
+    </tr>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.Id</td>
+            <td>@i.ComputationInfoName</td>
+            <td>@i.ParticipantName</td>
+            <td>@i.IsEnabled</td>
+        </tr>
+    }
+</table>
+
+@if (ViewBag.ErrorMessage == null)
+{
+    <form action="ComputationInfoParticipant" method="post" id="enrollinproject">
+        <fieldset>
+            <legend>Enroll in project </legend>
+            Enroll or unenroll participant in a project. Computation requests for a project are only sent to enrolled participants.
+            <div>
+                <br />
+                <label>
+                    Project name
+                </label>
+                <br />
+                <input type="text" name="projectname" id="projectname" title="Enter a valid project name that is already created" required autofocus/>
+            </div>
+            <div>
+                <br />
+                <label>
+                    Participant name
+                </label>
+                <br />
+                <input type="text" name="participantname" id="participantname" title="Enter name of an existing participant" required autofocus/>
+            </div>
+            <div>
+                <br />
+                <button name="submitbutton" value="Enroll" type=submit title="Enable participant to participate in a project">Enroll</button>
+                &nbsp;&nbsp;&nbsp;
+                <button name="submitbutton" value="Unenroll" type=submit title="Unenroll participant from the project">Unenroll</button>
+            </div>
+        </fieldset>
+    </form>
+}
+
+@if (ViewBag.ErrorMessage == "AuthorizationRequired")
+{
+    <p>You have to sign-in to see all computation jobs on site. Click @Html.ActionLink("here", "Index", "ComputationInfoParticipant", new { reauth = true }, null) to sign-in.</p>
+}
+
+@if (ViewBag.ErrorMessage == "UnexpectedError")
+{
+    <p>An unexpected error occurred while retrieving the computation jobs on site.  Please try again.  You may need to sign-in.</p>
+}
