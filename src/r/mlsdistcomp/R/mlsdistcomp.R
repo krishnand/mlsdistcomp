@@ -1130,7 +1130,7 @@ ComputationInfoJob <- R6Class(
       participantsDataFrame <- participantObj$getParticipants(NULL)
 
       print("Filter participants dataframe to include only project participants ..")
-      participantsDataFrame[participantsDataFrame$Name %in% unique(compInfoParticipantsDataFrame$ParticipantName), ]
+      participantsDataFrame = participantsDataFrame[participantsDataFrame$Name %in% unique(compInfoParticipantsDataFrame$ParticipantName), ]
       if(nrow(participantsDataFrame) == 0){
         stop(sprintf("Participants not found for triggering computations."))
       }

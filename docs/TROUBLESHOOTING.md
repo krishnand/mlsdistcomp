@@ -20,12 +20,13 @@ msbuild "<A_VALID_LOCAL_FOLDER>\CentralRegistry.csproj" /nologo /p:PublishProfil
 a. The web application src must be downloaded locally for customization.
 b. `msbuild` is in PATH and available when using the `MSBuild Command Prompt for VS2015` or  `Developer Command Prompt for VS2017` or other Visual Studio command shell on Windows machines.
 
-### Customizing `mlsdistcomp` R package 
+## Customizing `mlsdistcomp` R package 
 
 1. Fix and build the package locally [[devtools::build()]]
-2. Push new package to mlsdistcomp repo
+2. Push new package to your repo
+3. Edit the reference to the new mlsdistcomp package in the deployments 
 
-### Debugging web services
+## Debugging web services
 
 1. Enable localadmin on MLS
   a. Set env var
