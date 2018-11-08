@@ -14,7 +14,7 @@
 ################################################################################
 
 RSCRIPT_BINARY="/usr/bin/Rscript"
-MLS_ROOT="/opt/microsoft/mlserver/9.2.1"
+MLS_ROOT="/opt/microsoft/mlserver/9.3.0"
 MLS_RLIB_PATH="${MLS_ROOT}/libraries/RServer"
 MLS_ADMINUTIL_PATH="${MLS_ROOT}/o16n/Microsoft.MLServer.Utils.AdminUtil/Microsoft.MLServer.Utils.AdminUtil.dll"
 MLS_WEBNODE_APPSETTINGS="${MLS_ROOT}/o16n/Microsoft.MLServer.WebNode/appsettings.json"
@@ -79,8 +79,8 @@ UpdateSystem()
     echo "Updating apt and packages..."
     sudo apt-get -y update
 
-    echo "Installing jq, curl and libsecret packages..."
-    sudo apt-get -y install curl jq libsecret-1-dev
+    echo "Installing jq and curl packages..."
+    sudo apt-get -y install curl jq
 
     #
     # To Install SQL tools on vanilla Ubuntu 16.04 - enable section below. Ubuntu DSVM already
